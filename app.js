@@ -106,7 +106,13 @@ function buildDynamicFields(type) {
     container.innerHTML = html;
 }
 
-// Save Transaction (Fetch API to Apps Script)
+// Save Transaction (const response = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify(payload)
+});)
 async function saveTransaction() {
     const btn = document.getElementById('save-btn');
     const loader = document.getElementById('loader');
