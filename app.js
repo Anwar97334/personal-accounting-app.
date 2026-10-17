@@ -6,7 +6,7 @@
 // ========================================================
 // 1. CONFIGURATION: PASTE YOUR DEPLOYED WEB APP URL HERE
 // ========================================================
-const SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE'; // Must end in /exec
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztAt2EsTrGp8tcngD9E6QeYStUKce16nVVJ22NXaJGpk9Bd9K7GB4tBicueQmiFhNz/exec'; // Must end in /exec
 
 // Nine Master Accounts
 const ACCOUNTS = [
