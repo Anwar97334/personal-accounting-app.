@@ -3,79 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Accounting Database</title>
+    <title>Personal Accounting Management System</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="sidebar">
         <div class="logo">
-            <h2>Ledger</h2>
+            <h2>Ledger Pro</h2>
+            <span>Personal Accounting</span>
         </div>
         <ul class="nav-links">
             <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
             <li onclick="switchTab('transaction-entry')">Add Transaction</li>
-            <li onclick="switchTab('reports')">Monthly Reports</li>
             <li onclick="switchTab('savings')">Savings Funds</li>
             <li onclick="switchTab('loans')">Loan Tracking</li>
+            <li onclick="switchTab('projects')">Project Ledgers</li>
         </ul>
     </nav>
 
     <main class="content">
-        <!-- DASHBOARD TAB -->
+        <!-- TAB 1: DASHBOARD -->
         <section id="dashboard" class="tab-content active">
             <header>
-                <h1>Financial Dashboard</h1>
+                <div>
+                    <h1>Financial Dashboard</h1>
+                    <p class="subtitle">Live Cash Flow & Account Balances</p>
+                </div>
                 <div class="period-selector">
-                    <select id="dash-month">
+                    <select id="dash-month" onchange="fetchDashboardMetrics()">
                         <option value="January">January</option>
                         <option value="February">February</option>
-                        <!-- Add all months -->
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October" selected>October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
                     </select>
-                    <select id="dash-year">
-                        <option value="2026">2026</option>
+                    <select id="dash-year" onchange="fetchDashboardMetrics()">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
                         <option value="2027">2027</option>
+                        <option value="2028">2028</option>
                     </select>
+                    <button class="btn-refresh" onclick="fetchDashboardMetrics()">↻ Refresh</button>
                 </div>
             </header>
 
             <div class="summary-cards">
                 <div class="card income">
-                    <h3>Total Income</h3>
-                    <h2 id="dash-income">₹0.00</h2>
+                    <h3>Total Income (Direct + Indirect)</h3>
+                    <h2 id="dash-total-income">₹0.00</h2>
+                    <small>Direct: <span id="dash-direct-income">₹0.00</span> | Indirect: <span id="dash-indirect-income">₹0.00</span></small>
                 </div>
                 <div class="card expense">
-                    <h3>Total Expenditure</h3>
-                    <h2 id="dash-expense">₹0.00</h2>
+                    <h3>Total Outflow (Expenditure + Outflows)</h3>
+                    <h2 id="dash-total-expense">₹0.00</h2>
+                    <small>Direct: <span id="dash-direct-expense">₹0.00</span> | Indirect: <span id="dash-indirect-expense">₹0.00</span></small>
                 </div>
                 <div class="card balance">
-                    <h3>Net Cash Flow</h3>
-                    <h2 id="dash-net">₹0.00</h2>
+                    <h3>Net Cash Flow (Selected Month)</h3>
+                    <h2 id="dash-net-flow">₹0.00</h2>
+                    <small id="dash-total-combined">Total In Hand: ₹0.00</small>
                 </div>
             </div>
 
             <div class="account-balances">
-                <h3>Cash & Bank Balances</h3>
+                <div class="section-title">
+                    <h3>Cash & Bank Balances (9 Master Accounts)</h3>
+                </div>
                 <div class="grid-balances" id="balance-grid">
-                    <!-- Populated by JS -->
+                    <!-- Loaded dynamically via app.js -->
                 </div>
             </div>
         </section>
 
-        <!-- TRANSACTION ENTRY TAB -->
+        <!-- TAB 2: TRANSACTION ENTRY -->
         <section id="transaction-entry" class="tab-content">
-            <h1>Add Transaction</h1>
+            <header>
+                <div>
+                    <h1>Add New Transaction</h1>
+                    <p class="subtitle">Enter financial movements into your ledger</p>
+                </div>
+            </header>
+            
             <div class="form-container">
                 <!-- STEP 1 -->
                 <div id="step-1" class="form-step active">
+                    <div class="step-badge">Step 1 of 2: General Details</div>
                     <div class="form-group">
-                        <label>Date of Transaction *</label>
+                        <label for="tx-date">Date of Transaction *</label>
                         <input type="date" id="tx-date" required>
                     </div>
                     <div class="form-group">
-                        <label>Transaction Type *</label>
+                        <label for="tx-type">Transaction Type *</label>
                         <select id="tx-type" required>
-                            <option value="">Select Type</option>
+                            <option value="">-- Choose Transaction Type --</option>
                             <option value="Direct Income">Direct Income</option>
                             <option value="Indirect Inflow">Indirect Inflow</option>
                             <option value="Direct Expenditure">Direct Expenditure</option>
@@ -85,31 +113,82 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Description</label>
-                        <input type="text" id="tx-desc" placeholder="Optional details">
+                        <label for="tx-desc">Description (Optional)</label>
+                        <input type="text" id="tx-desc" placeholder="Add remarks or notes">
                     </div>
-                    <button class="btn-primary" onclick="nextStep()">Continue</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Continue to Step 2 →</button>
                 </div>
 
-                <!-- STEP 2 (Dynamic based on Type) -->
+                <!-- STEP 2 -->
                 <div id="step-2" class="form-step">
+                    <div class="step-badge">Step 2 of 2: Account & Category Specifics</div>
                     <div id="dynamic-fields"></div>
                     
                     <div class="form-group">
-                        <label>Amount (₹) *</label>
-                        <input type="number" id="tx-amount" min="1" step="0.01" required>
+                        <label for="tx-amount">Amount (₹) *</label>
+                        <input type="number" id="tx-amount" min="1" step="0.01" placeholder="Enter amount" required>
                     </div>
 
                     <div class="btn-group">
-                        <button class="btn-secondary" onclick="prevStep()">Back</button>
-                        <button class="btn-primary" onclick="saveTransaction()" id="save-btn">Save Transaction</button>
+                        <button type="button" class="btn-secondary" onclick="prevStep()">← Back</button>
+                        <button type="button" class="btn-primary" onclick="saveTransaction()" id="save-btn">Save Transaction</button>
                     </div>
                 </div>
             </div>
             
-            <!-- Loader & Notifications -->
-            <div id="loader" class="hidden">Saving... Do not refresh.</div>
+            <div id="loader" class="hidden">Saving transaction to database... Please wait.</div>
             <div id="notification" class="hidden"></div>
+        </section>
+
+        <!-- TAB 3: SAVINGS FUNDS -->
+        <section id="savings" class="tab-content">
+            <header>
+                <div>
+                    <h1>Savings Funds Targets</h1>
+                    <p class="subtitle">Allocated reserves and goal progress</p>
+                </div>
+            </header>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Fund Name</th>
+                            <th>Target Amount</th>
+                            <th>Accumulated</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savings-table-body">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 4: LOAN TRACKING -->
+        <section id="loans" class="tab-content">
+            <header>
+                <div>
+                    <h1>Loan Tracking Ledger</h1>
+                    <p class="subtitle">Liabilities & Receivables</p>
+                </div>
+            </header>
+            <div class="info-card">
+                <p>Transactions categorized as <strong>Taken Loan</strong>, <strong>By Loan Returns</strong>, <strong>Given Loan</strong>, and <strong>To Loan Return</strong> automatically post to the Google Sheet <code>Loan Tracking</code> tab.</p>
+            </div>
+        </section>
+
+        <!-- TAB 5: PROJECT LEDGERS -->
+        <section id="projects" class="tab-content">
+            <header>
+                <div>
+                    <h1>Project & Special Ledgers</h1>
+                    <p class="subtitle">Dedicated tracking for business undertakings</p>
+                </div>
+            </header>
+            <div class="info-card">
+                <p>Tracked Projects: <strong>Plots & Lands</strong>, <strong>Project Road</strong>, <strong>Rayati Royalty</strong>, and <strong>Security Guard</strong>. Entries recorded under Direct Income or Indirect Outflow for these categories update both cash balances and separate ledger rows.</p>
+            </div>
         </section>
     </main>
 
