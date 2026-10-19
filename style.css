@@ -225,7 +225,7 @@ input, select {
     display: none !important;
 }
 
-#loader {
+#loader, #ob-loader {
     margin-top: 14px;
     padding: 12px;
     background: #FEF3C7;
@@ -234,7 +234,7 @@ input, select {
     max-width: 560px;
 }
 
-#notification {
+#notification, #ob-notification {
     padding: 14px;
     border-radius: 6px;
     margin-top: 14px;
