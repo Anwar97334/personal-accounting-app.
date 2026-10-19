@@ -1,4 +1,4 @@
-// PUT YOUR REAL EXEC URL HERE (DO NOT FORGET THIS)
+// PUT YOUR REAL GOOGLE APPS SCRIPT WEB APP URL HERE (Ending in /exec)
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtucWSlm4kBxpCLN3xefz0MYM-EuccvdaRas8d2mqqNd-Q5hCPJh3H5rjdpqp4QNB/exec';
 
 const ACCOUNTS = [
@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateInput) dateInput.value = today;
 
     renderAccountGrid();
+    renderOpeningBalanceInputs();
+
     if (SCRIPT_URL && !SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) {
         fetchDashboardMetrics();
     }
@@ -50,6 +52,17 @@ function renderAccountGrid() {
         <div class="account-card">
             <h4>${acc}</h4>
             <p id="bal-${acc.replace(/[^a-zA-Z0-9]/g, '')}">₹0.00</p>
+        </div>
+    `).join('');
+}
+
+function renderOpeningBalanceInputs() {
+    const container = document.getElementById('ob-inputs-container');
+    if (!container) return;
+    container.innerHTML = ACCOUNTS.map(acc => `
+        <div class="form-group">
+            <label>${acc} (₹)</label>
+            <input type="number" step="0.01" class="ob-amount-input" data-account="${acc}" placeholder="0.00" value="0">
         </div>
     `).join('');
 }
@@ -285,9 +298,7 @@ async function saveTransaction() {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload)
         });
 
@@ -315,6 +326,59 @@ async function saveTransaction() {
     }
 }
 
+async function submitOpeningBalances() {
+    const btn = document.getElementById('ob-save-btn');
+    const loader = document.getElementById('ob-loader');
+    const notif = document.getElementById('ob-notification');
+    const year = document.getElementById('ob-year').value;
+    const month = document.getElementById('ob-month').value;
+
+    const balances = {};
+    document.querySelectorAll('.ob-amount-input').forEach(input => {
+        const acc = input.getAttribute('data-account');
+        balances[acc] = parseFloat(input.value) || 0;
+    });
+
+    btn.disabled = true;
+    loader.classList.remove('hidden');
+    notif.classList.add('hidden');
+
+    const payload = {
+        action: "saveOpeningBalances",
+        data: {
+            year: year,
+            month: month,
+            balances: balances
+        }
+    };
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.status === "success") {
+            notif.textContent = result.message;
+            notif.className = 'notif-success';
+            notif.classList.remove('hidden');
+
+            fetchDashboardMetrics();
+        } else {
+            throw new Error(result.message || "Failed to save opening balances.");
+        }
+    } catch (err) {
+        notif.textContent = "Error: " + err.message;
+        notif.className = 'notif-error';
+        notif.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        loader.classList.add('hidden');
+    }
+}
+
 async function fetchDashboardMetrics() {
     if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
 
@@ -324,9 +388,7 @@ async function fetchDashboardMetrics() {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: "getDashboard",
                 month: month,
