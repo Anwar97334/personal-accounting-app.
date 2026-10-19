@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Accounting Management System</title>
+    <title>Personal Accounting App</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -16,14 +16,11 @@
         <ul class="nav-links">
             <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
             <li onclick="switchTab('transaction-entry')">Add Transaction</li>
-            <li onclick="switchTab('savings')">Savings Funds</li>
-            <li onclick="switchTab('loans')">Loan Tracking</li>
-            <li onclick="switchTab('projects')">Project Ledgers</li>
         </ul>
     </nav>
 
     <main class="content">
-        <!-- TAB 1: DASHBOARD -->
+        <!-- DASHBOARD TAB -->
         <section id="dashboard" class="tab-content active">
             <header>
                 <div>
@@ -49,7 +46,6 @@
                         <option value="2025">2025</option>
                         <option value="2026" selected>2026</option>
                         <option value="2027">2027</option>
-                        <option value="2028">2028</option>
                     </select>
                     <button class="btn-refresh" onclick="fetchDashboardMetrics()">↻ Refresh</button>
                 </div>
@@ -57,45 +53,39 @@
 
             <div class="summary-cards">
                 <div class="card income">
-                    <h3>Total Income (Direct + Indirect)</h3>
+                    <h3>Total Income</h3>
                     <h2 id="dash-total-income">₹0.00</h2>
                     <small>Direct: <span id="dash-direct-income">₹0.00</span> | Indirect: <span id="dash-indirect-income">₹0.00</span></small>
                 </div>
                 <div class="card expense">
-                    <h3>Total Outflow (Expenditure + Outflows)</h3>
+                    <h3>Total Outflow</h3>
                     <h2 id="dash-total-expense">₹0.00</h2>
                     <small>Direct: <span id="dash-direct-expense">₹0.00</span> | Indirect: <span id="dash-indirect-expense">₹0.00</span></small>
                 </div>
                 <div class="card balance">
-                    <h3>Net Cash Flow (Selected Month)</h3>
+                    <h3>Net Cash Flow</h3>
                     <h2 id="dash-net-flow">₹0.00</h2>
-                    <small id="dash-total-combined">Total In Hand: ₹0.00</small>
                 </div>
             </div>
 
             <div class="account-balances">
-                <div class="section-title">
-                    <h3>Cash & Bank Balances (9 Master Accounts)</h3>
-                </div>
-                <div class="grid-balances" id="balance-grid">
-                    <!-- Loaded dynamically via app.js -->
-                </div>
+                <h3 style="margin-bottom: 16px;">Cash & Bank Balances (9 Master Accounts)</h3>
+                <div class="grid-balances" id="balance-grid"></div>
             </div>
         </section>
 
-        <!-- TAB 2: TRANSACTION ENTRY -->
+        <!-- ADD TRANSACTION TAB -->
         <section id="transaction-entry" class="tab-content">
             <header>
                 <div>
-                    <h1>Add New Transaction</h1>
-                    <p class="subtitle">Enter financial movements into your ledger</p>
+                    <h1>Add Transaction</h1>
+                    <p class="subtitle">Log income, expense, transfer, or fund allocation</p>
                 </div>
             </header>
             
             <div class="form-container">
                 <!-- STEP 1 -->
                 <div id="step-1" class="form-step active">
-                    <div class="step-badge">Step 1 of 2: General Details</div>
                     <div class="form-group">
                         <label for="tx-date">Date of Transaction *</label>
                         <input type="date" id="tx-date" required>
@@ -114,14 +104,13 @@
                     </div>
                     <div class="form-group">
                         <label for="tx-desc">Description (Optional)</label>
-                        <input type="text" id="tx-desc" placeholder="Add remarks or notes">
+                        <input type="text" id="tx-desc" placeholder="Details or remarks">
                     </div>
-                    <button type="button" class="btn-primary" onclick="nextStep()">Continue to Step 2 →</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Continue →</button>
                 </div>
 
                 <!-- STEP 2 -->
                 <div id="step-2" class="form-step">
-                    <div class="step-badge">Step 2 of 2: Account & Category Specifics</div>
                     <div id="dynamic-fields"></div>
                     
                     <div class="form-group">
@@ -136,59 +125,8 @@
                 </div>
             </div>
             
-            <div id="loader" class="hidden">Saving transaction to database... Please wait.</div>
+            <div id="loader" class="hidden">Saving to Google Sheets... Please wait.</div>
             <div id="notification" class="hidden"></div>
-        </section>
-
-        <!-- TAB 3: SAVINGS FUNDS -->
-        <section id="savings" class="tab-content">
-            <header>
-                <div>
-                    <h1>Savings Funds Targets</h1>
-                    <p class="subtitle">Allocated reserves and goal progress</p>
-                </div>
-            </header>
-            <div class="table-container">
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Fund Name</th>
-                            <th>Target Amount</th>
-                            <th>Accumulated</th>
-                            <th>Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody id="savings-table-body">
-                        <!-- Loaded dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- TAB 4: LOAN TRACKING -->
-        <section id="loans" class="tab-content">
-            <header>
-                <div>
-                    <h1>Loan Tracking Ledger</h1>
-                    <p class="subtitle">Liabilities & Receivables</p>
-                </div>
-            </header>
-            <div class="info-card">
-                <p>Transactions categorized as <strong>Taken Loan</strong>, <strong>By Loan Returns</strong>, <strong>Given Loan</strong>, and <strong>To Loan Return</strong> automatically post to the Google Sheet <code>Loan Tracking</code> tab.</p>
-            </div>
-        </section>
-
-        <!-- TAB 5: PROJECT LEDGERS -->
-        <section id="projects" class="tab-content">
-            <header>
-                <div>
-                    <h1>Project & Special Ledgers</h1>
-                    <p class="subtitle">Dedicated tracking for business undertakings</p>
-                </div>
-            </header>
-            <div class="info-card">
-                <p>Tracked Projects: <strong>Plots & Lands</strong>, <strong>Project Road</strong>, <strong>Rayati Royalty</strong>, and <strong>Security Guard</strong>. Entries recorded under Direct Income or Indirect Outflow for these categories update both cash balances and separate ledger rows.</p>
-            </div>
         </section>
     </main>
 
