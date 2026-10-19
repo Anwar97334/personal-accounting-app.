@@ -86,7 +86,6 @@
             </header>
             
             <div class="form-container">
-                <!-- STEP 1 -->
                 <div id="step-1" class="form-step active">
                     <div class="form-group">
                         <label for="tx-date">Date of Transaction *</label>
@@ -111,7 +110,6 @@
                     <button type="button" class="btn-primary" onclick="nextStep()">Continue →</button>
                 </div>
 
-                <!-- STEP 2 -->
                 <div id="step-2" class="form-step">
                     <div id="dynamic-fields"></div>
                     
@@ -131,14 +129,14 @@
             <div id="notification" class="hidden"></div>
         </section>
 
-        <!-- TRANSACTION HISTORY TAB (EDIT / DELETE) -->
+        <!-- TRANSACTION HISTORY TAB (EDIT & DELETE) -->
         <section id="transaction-history" class="tab-content">
             <header>
                 <div>
                     <h1>Transaction History</h1>
-                    <p class="subtitle">View and delete records for selected period</p>
+                    <p class="subtitle">View, edit, or delete records for the selected period</p>
                 </div>
-                <button class="btn-refresh" onclick="loadTransactionHistory()">↻ Load History</button>
+                <button class="btn-refresh" onclick="loadTransactionHistory()">↻ Refresh History</button>
             </header>
 
             <div class="table-container">
@@ -151,11 +149,11 @@
                             <th>Account</th>
                             <th>Description</th>
                             <th>Amount</th>
-                            <th>Action</th>
+                            <th style="text-align: center;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="history-table-body">
-                        <tr><td colspan="7" style="text-align: center;">Click "Load History" to view records.</td></tr>
+                        <tr><td colspan="7" style="text-align: center;">Click "Refresh History" to view records.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -210,6 +208,33 @@
             <div id="ob-notification" class="hidden"></div>
         </section>
     </main>
+
+    <!-- EDIT TRANSACTION MODAL -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>Edit Transaction</h2>
+            <input type="hidden" id="edit-tx-id">
+            
+            <div class="form-group">
+                <label>Date *</label>
+                <input type="date" id="edit-tx-date" required>
+            </div>
+            <div class="form-group">
+                <label>Amount (₹) *</label>
+                <input type="number" id="edit-tx-amount" min="1" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="edit-tx-desc">
+            </div>
+            <div id="edit-dynamic-fields"></div>
+
+            <div class="btn-group" style="margin-top: 24px;">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="saveEditedTransaction()" id="edit-save-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
