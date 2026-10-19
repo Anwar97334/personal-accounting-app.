@@ -7,6 +7,7 @@
     --text-dark: #1E293B;
     --text-muted: #64748B;
     --border-color: #E2E8F0;
+    --danger: #EF4444;
 }
 
 * {
@@ -99,7 +100,7 @@ header h1 {
 .btn-refresh {
     background: var(--white);
     border: 1px solid var(--border-color);
-    padding: 8px 12px;
+    padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
@@ -221,11 +222,26 @@ input, select {
     margin-top: 20px;
 }
 
+.btn-delete {
+    background-color: #FEE2E2;
+    color: var(--danger);
+    border: 1px solid #FECACA;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.btn-delete:hover {
+    background-color: #FCA5A5;
+}
+
 .hidden {
     display: none !important;
 }
 
-#loader, #ob-loader {
+#loader, #ob-loader, #history-loader {
     margin-top: 14px;
     padding: 12px;
     background: #FEF3C7;
@@ -252,4 +268,30 @@ input, select {
     background: #FEE2E2;
     color: #991B1B;
     border: 1px solid #FECACA;
+}
+
+/* History Table */
+.table-container {
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.report-table th, .report-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.report-table th {
+    background: #F1F5F9;
+    font-weight: 600;
+    color: var(--text-dark);
 }
