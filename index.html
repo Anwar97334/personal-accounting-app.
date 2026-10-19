@@ -16,6 +16,7 @@
         <ul class="nav-links">
             <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
             <li onclick="switchTab('transaction-entry')">Add Transaction</li>
+            <li onclick="switchTab('opening-balances')">Opening Balances</li>
         </ul>
     </nav>
 
@@ -69,7 +70,7 @@
             </div>
 
             <div class="account-balances">
-                <h3 style="margin-bottom: 16px;">Cash & Bank Balances (9 Master Accounts)</h3>
+                <h3 style="margin-bottom: 16px;">Current Account Balances (9 Master Accounts)</h3>
                 <div class="grid-balances" id="balance-grid"></div>
             </div>
         </section>
@@ -127,6 +128,56 @@
             
             <div id="loader" class="hidden">Saving to Google Sheets... Please wait.</div>
             <div id="notification" class="hidden"></div>
+        </section>
+
+        <!-- OPENING BALANCES SETUP TAB -->
+        <section id="opening-balances" class="tab-content">
+            <header>
+                <div>
+                    <h1>Initial Opening Balances</h1>
+                    <p class="subtitle">Set up starting balances for your 9 accounts</p>
+                </div>
+            </header>
+
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="ob-year">Financial Year</label>
+                    <select id="ob-year">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ob-month">Month</label>
+                    <select id="ob-month">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October" selected>October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                </div>
+
+                <div id="ob-inputs-container" style="margin-top: 20px;">
+                    <!-- 9 Account Input Fields are injected dynamically -->
+                </div>
+
+                <button type="button" class="btn-primary" onclick="submitOpeningBalances()" id="ob-save-btn" style="margin-top: 20px;">
+                    Save Opening Balances
+                </button>
+            </div>
+            
+            <div id="ob-loader" class="hidden">Saving opening balances... Please wait.</div>
+            <div id="ob-notification" class="hidden"></div>
         </section>
     </main>
 
