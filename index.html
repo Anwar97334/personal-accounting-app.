@@ -16,6 +16,7 @@
         <ul class="nav-links">
             <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
             <li onclick="switchTab('transaction-entry')">Add Transaction</li>
+            <li onclick="switchTab('transaction-history')">Transaction History</li>
             <li onclick="switchTab('opening-balances')">Opening Balances</li>
         </ul>
     </nav>
@@ -130,6 +131,37 @@
             <div id="notification" class="hidden"></div>
         </section>
 
+        <!-- TRANSACTION HISTORY TAB (EDIT / DELETE) -->
+        <section id="transaction-history" class="tab-content">
+            <header>
+                <div>
+                    <h1>Transaction History</h1>
+                    <p class="subtitle">View and delete records for selected period</p>
+                </div>
+                <button class="btn-refresh" onclick="loadTransactionHistory()">↻ Load History</button>
+            </header>
+
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Category</th>
+                            <th>Account</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr><td colspan="7" style="text-align: center;">Click "Load History" to view records.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="history-loader" class="hidden">Loading transactions...</div>
+        </section>
+
         <!-- OPENING BALANCES SETUP TAB -->
         <section id="opening-balances" class="tab-content">
             <header>
@@ -167,9 +199,7 @@
                     </select>
                 </div>
 
-                <div id="ob-inputs-container" style="margin-top: 20px;">
-                    <!-- 9 Account Input Fields are injected dynamically -->
-                </div>
+                <div id="ob-inputs-container" style="margin-top: 20px;"></div>
 
                 <button type="button" class="btn-primary" onclick="submitOpeningBalances()" id="ob-save-btn" style="margin-top: 20px;">
                     Save Opening Balances
