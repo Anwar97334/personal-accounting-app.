@@ -1,46 +1,25 @@
-/**
- * PERSONAL ACCOUNTING WEB APP - FRONTEND ENGINE
- * Connects UI to Google Apps Script Web API
- */
+// PUT YOUR REAL EXEC URL HERE (DO NOT FORGET THIS)
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtucWSlm4kBxpCLN3xefz0MYM-EuccvdaRas8d2mqqNd-Q5hCPJh3H5rjdpqp4QNB/exec';
 
-// ========================================================
-// 1. CONFIGURATION: PASTE YOUR DEPLOYED WEB APP URL HERE
-// ========================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztAt2EsTrGp8tcngD9E6QeYStUKce16nVVJ22NXaJGpk9Bd9K7GB4tBicueQmiFhNz/exec'; // Must end in /exec
-
-// Nine Master Accounts
 const ACCOUNTS = [
     "My Purse", "Home Cash Bag", "My Sbi", "My Cbi", 
     "Binita's Sbi", "Punni's Sbi", "Maa Bank", 
     "Binita's Cash", "Punni's Cash"
 ];
 
-// Savings Funds with Target Amounts
-const SAVINGS_TARGETS = {
-    "Bolero Car": 1000000,
-    "Bonku's Education": 1000000,
-    "Dream House": 6000000,
-    "Survival Fund": 500000,
-    "Thunderbird Bike": 300000,
-    "Urgent Medical Fund": 500000,
-    "Yearly Travelling Fund": 100000
-};
-
-// ========================================================
-// 2. INITIALIZATION & NAVIGATION
-// ========================================================
+const SAVINGS_FUNDS = [
+    "Bolero Car", "Bonku's Education", "Dream House", 
+    "Survival Fund", "Thunderbird Bike", "Urgent Medical Fund", 
+    "Yearly Travelling Fund"
+];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Default transaction date to today in Indian Standard Time (Asia/Kolkata)
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
     const dateInput = document.getElementById('tx-date');
     if (dateInput) dateInput.value = today;
 
-    // Render placeholder cards for 9 accounts
-    renderAccountPlaceholders();
-    
-    // Initial fetch of metrics if endpoint configured
-    if (SCRIPT_URL && !SCRIPT_URL.includes('YOUR_WEB_APP_URL_HERE')) {
+    renderAccountGrid();
+    if (SCRIPT_URL && !SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) {
         fetchDashboardMetrics();
     }
 });
@@ -64,31 +43,27 @@ function formatINR(val) {
     }).format(val || 0);
 }
 
-function renderAccountPlaceholders() {
+function renderAccountGrid() {
     const grid = document.getElementById('balance-grid');
     if (!grid) return;
     grid.innerHTML = ACCOUNTS.map(acc => `
-        <div class="account-card" id="card-${acc.replace(/[^a-zA-Z0-9]/g, '')}">
+        <div class="account-card">
             <h4>${acc}</h4>
             <p id="bal-${acc.replace(/[^a-zA-Z0-9]/g, '')}">₹0.00</p>
         </div>
     `).join('');
 }
 
-// ========================================================
-// 3. MULTI-STEP FORM BUILDER
-// ========================================================
-
 function nextStep() {
     const date = document.getElementById('tx-date').value;
     const type = document.getElementById('tx-type').value;
 
     if (!date || !type) {
-        alert("Please select both a Transaction Date and Transaction Type.");
+        alert("Please select both Date and Transaction Type.");
         return;
     }
 
-    buildStepTwoFields(type);
+    buildDynamicFields(type);
     document.getElementById('step-1').classList.remove('active');
     document.getElementById('step-2').classList.add('active');
 }
@@ -106,7 +81,7 @@ function handleCategoryChange() {
     }
 }
 
-function buildStepTwoFields(type) {
+function buildDynamicFields(type) {
     const container = document.getElementById('dynamic-fields');
     let html = '';
     const accountOpts = ACCOUNTS.map(a => `<option value="${a}">${a}</option>`).join('');
@@ -115,7 +90,7 @@ function buildStepTwoFields(type) {
         html = `
             <div class="form-group">
                 <label>Direct Income Category *</label>
-                <select id="tx-category" onchange="handleCategoryChange()" required>
+                <select id="tx-category" onchange="handleCategoryChange()">
                     <option value="JIO TOWER">JIO TOWER</option>
                     <option value="PLOTS & LAND">PLOTS & LAND</option>
                     <option value="PROJECT ROAD">PROJECT ROAD</option>
@@ -125,8 +100,8 @@ function buildStepTwoFields(type) {
                 </select>
             </div>
             <div class="form-group" id="custom-cat-wrapper" style="display:none;">
-                <label>Custom Category Name *</label>
-                <input type="text" id="tx-custom-category" placeholder="Specify income stream">
+                <label>Custom Category Name</label>
+                <input type="text" id="tx-custom-category" placeholder="Enter custom category">
             </div>
             <div class="form-group">
                 <label>Account Type</label>
@@ -144,22 +119,22 @@ function buildStepTwoFields(type) {
         html = `
             <div class="form-group">
                 <label>Indirect Inflow Category *</label>
-                <select id="tx-category" onchange="handleCategoryChange()" required>
-                    <option value="Taken Loan">Taken Loan (Borrowing)</option>
-                    <option value="By Loan Returns">By Loan Returns (Receivable repayment)</option>
+                <select id="tx-category" onchange="handleCategoryChange()">
+                    <option value="Taken Loan">Taken Loan</option>
+                    <option value="By Loan Returns">By Loan Returns</option>
                     <option value="OTHERS">OTHERS</option>
                 </select>
             </div>
             <div class="form-group" id="custom-cat-wrapper" style="display:none;">
-                <label>Custom Category Name *</label>
-                <input type="text" id="tx-custom-category" placeholder="Specify inflow category">
+                <label>Custom Category Name</label>
+                <input type="text" id="tx-custom-category" placeholder="Enter custom category">
             </div>
             <div class="form-group">
-                <label>Person or Party Name</label>
-                <input type="text" id="tx-person" placeholder="Name of lender or party">
+                <label>Person / Party Name</label>
+                <input type="text" id="tx-person" placeholder="Person name">
             </div>
             <div class="form-group">
-                <label>Account Name *</label>
+                <label>Receiving Account *</label>
                 <select id="tx-account">${accountOpts}</select>
             </div>
         `;
@@ -167,7 +142,7 @@ function buildStepTwoFields(type) {
         html = `
             <div class="form-group">
                 <label>Direct Expenditure Category *</label>
-                <select id="tx-category" onchange="handleCategoryChange()" required>
+                <select id="tx-category" onchange="handleCategoryChange()">
                     <option value="Dress & Fashion">Dress & Fashion</option>
                     <option value="Electric Bill">Electric Bill</option>
                     <option value="Family">Family</option>
@@ -188,8 +163,8 @@ function buildStepTwoFields(type) {
                 </select>
             </div>
             <div class="form-group" id="custom-cat-wrapper" style="display:none;">
-                <label>Custom Category Name *</label>
-                <input type="text" id="tx-custom-category" placeholder="Enter expenditure purpose">
+                <label>Custom Category Name</label>
+                <input type="text" id="tx-custom-category" placeholder="Enter custom category">
             </div>
             <div class="form-group">
                 <label>Account Deducted *</label>
@@ -200,24 +175,24 @@ function buildStepTwoFields(type) {
         html = `
             <div class="form-group">
                 <label>Indirect Outflow Category *</label>
-                <select id="tx-category" onchange="handleCategoryChange()" required>
-                    <option value="Given Loan">Given Loan (Lending)</option>
-                    <option value="To Loan Return">To Loan Return (Debt repayment)</option>
-                    <option value="Plots & Lands">Plots & Lands (Project)</option>
-                    <option value="Project Road">Project Road (Project)</option>
-                    <option value="Rayati Royalty">Rayati Royalty (Project)</option>
-                    <option value="Security Guard">Security Guard (Project)</option>
-                    <option value="Share of God">Share of God (Payout)</option>
+                <select id="tx-category" onchange="handleCategoryChange()">
+                    <option value="Given Loan">Given Loan</option>
+                    <option value="To Loan Return">To Loan Return</option>
+                    <option value="Plots & Lands">Plots & Lands</option>
+                    <option value="Project Road">Project Road</option>
+                    <option value="Rayati Royalty">Rayati Royalty</option>
+                    <option value="Security Guard">Security Guard</option>
+                    <option value="Share of God">Share of God</option>
                     <option value="Others">Others</option>
                 </select>
             </div>
             <div class="form-group" id="custom-cat-wrapper" style="display:none;">
-                <label>Custom Category Name *</label>
-                <input type="text" id="tx-custom-category" placeholder="Enter custom outflow description">
+                <label>Custom Category Name</label>
+                <input type="text" id="tx-custom-category" placeholder="Enter custom category">
             </div>
             <div class="form-group">
-                <label>Person / Party Name (For Loans)</label>
-                <input type="text" id="tx-person" placeholder="Party Name">
+                <label>Person / Party Name</label>
+                <input type="text" id="tx-person" placeholder="Person name">
             </div>
             <div class="form-group">
                 <label>Account Deducted *</label>
@@ -225,14 +200,14 @@ function buildStepTwoFields(type) {
             </div>
         `;
     } else if (type === "Savings Funds") {
-        const fundsOpts = Object.keys(SAVINGS_TARGETS).map(f => `<option value="${f}">${f}</option>`).join('');
+        const fundsOpts = SAVINGS_FUNDS.map(f => `<option value="${f}">${f}</option>`).join('');
         html = `
             <div class="form-group">
-                <label>Target Savings Fund *</label>
+                <label>Savings Fund *</label>
                 <select id="tx-savings-fund">${fundsOpts}</select>
             </div>
             <div class="form-group">
-                <label>Source Account (Deducted From) *</label>
+                <label>Source Account *</label>
                 <select id="tx-account">${accountOpts}</select>
             </div>
         `;
@@ -241,18 +216,18 @@ function buildStepTwoFields(type) {
             <div class="form-group">
                 <label>Transfer Type *</label>
                 <select id="tx-transfer-type">
-                    <option value="ATM Withdraw">ATM Withdraw (Bank to Cash)</option>
-                    <option value="Bank Deposit">Bank Deposit (Cash to Bank)</option>
+                    <option value="ATM Withdraw">ATM Withdraw</option>
+                    <option value="Bank Deposit">Bank Deposit</option>
                     <option value="Bank to Bank">Bank to Bank</option>
                     <option value="Cash to Cash">Cash to Cash</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Subtraction Account (From) *</label>
+                <label>From Account (Subtraction) *</label>
                 <select id="tx-source">${accountOpts}</select>
             </div>
             <div class="form-group">
-                <label>Addition Account (To) *</label>
+                <label>To Account (Addition) *</label>
                 <select id="tx-dest">${accountOpts}</select>
             </div>
         `;
@@ -260,10 +235,6 @@ function buildStepTwoFields(type) {
 
     container.innerHTML = html;
 }
-
-// ========================================================
-// 4. API DISPATCH: SAVE TRANSACTION (CORS SAFE)
-// ========================================================
 
 async function saveTransaction() {
     const btn = document.getElementById('save-btn');
@@ -274,7 +245,7 @@ async function saveTransaction() {
     const amount = parseFloat(amountVal);
 
     if (!amountVal || isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid positive numerical amount.");
+        alert("Please enter a valid positive number for Amount.");
         return;
     }
 
@@ -283,11 +254,10 @@ async function saveTransaction() {
     const destAcc = document.getElementById('tx-dest') ? document.getElementById('tx-dest').value : null;
 
     if (type === "Transfer" && sourceAcc === destAcc) {
-        alert("Subtraction and Addition accounts cannot be identical.");
+        alert("From and To accounts cannot be identical.");
         return;
     }
 
-    // Lock UI against double submissions
     btn.disabled = true;
     loader.classList.remove('hidden');
     notif.classList.add('hidden');
@@ -295,7 +265,7 @@ async function saveTransaction() {
     const payload = {
         action: "saveTransaction",
         data: {
-            transactionId: 'TX-' + Date.now() + '-' + Math.floor(Math.random() * 10000),
+            transactionId: 'TX-' + Date.now(),
             date: document.getElementById('tx-date').value,
             transactionType: type,
             description: document.getElementById('tx-desc').value || "",
@@ -313,7 +283,6 @@ async function saveTransaction() {
     };
 
     try {
-        // text/plain bypasses OPTIONS preflight check in browser
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
             headers: {
@@ -325,20 +294,19 @@ async function saveTransaction() {
         const result = await response.json();
 
         if (result.status === "success") {
-            notif.textContent = `Transaction saved successfully! ID: ${result.transactionId}`;
+            notif.textContent = "Transaction saved successfully! (ID: " + result.transactionId + ")";
             notif.className = 'notif-success';
             notif.classList.remove('hidden');
 
-            // Reset inputs
             document.getElementById('tx-amount').value = '';
             document.getElementById('tx-desc').value = '';
             prevStep();
             fetchDashboardMetrics();
         } else {
-            throw new Error(result.message || "Failed to commit record.");
+            throw new Error(result.message || "Failed to save record.");
         }
     } catch (error) {
-        notif.textContent = "Submission Error: " + error.message;
+        notif.textContent = "Error: " + error.message;
         notif.className = 'notif-error';
         notif.classList.remove('hidden');
     } finally {
@@ -347,12 +315,8 @@ async function saveTransaction() {
     }
 }
 
-// ========================================================
-// 5. METRICS AND DATA SYNC ENGINE
-// ========================================================
-
 async function fetchDashboardMetrics() {
-    if (!SCRIPT_URL || SCRIPT_URL.includes('YOUR_WEB_APP_URL_HERE')) return;
+    if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
 
     const month = document.getElementById('dash-month').value;
     const year = document.getElementById('dash-year').value;
@@ -374,52 +338,27 @@ async function fetchDashboardMetrics() {
         if (res.status === "success") {
             const d = res.data;
 
-            // Update Cash Flow Cards
             document.getElementById('dash-total-income').textContent = formatINR(d.totalIncome);
-            document.getElementById('dash-direct-income').textContent = formatINR(d.totalDirectIncome);
-            document.getElementById('dash-indirect-income').textContent = formatINR(d.totalIndirectInflow);
+            document.getElementById('dash-direct-income').textContent = formatINR(d.directIncome);
+            document.getElementById('dash-indirect-income').textContent = formatINR(d.indirectInflow);
 
-            document.getElementById('dash-total-expense').textContent = formatINR(d.totalExpenditure);
-            document.getElementById('dash-direct-expense').textContent = formatINR(d.totalDirectExpenditure);
-            document.getElementById('dash-indirect-expense').textContent = formatINR(d.totalIndirectOutflow);
+            document.getElementById('dash-total-expense').textContent = formatINR(d.totalExpense);
+            document.getElementById('dash-direct-expense').textContent = formatINR(d.directExpense);
+            document.getElementById('dash-indirect-expense').textContent = formatINR(d.indirectOutflow);
 
-            const net = d.totalIncome - d.totalExpenditure;
+            const net = d.totalIncome - d.totalExpense;
             document.getElementById('dash-net-flow').textContent = formatINR(net);
 
-            // Update 9 Accounts
-            let combinedBalance = 0;
             if (d.balances) {
                 ACCOUNTS.forEach(acc => {
                     const cleanKey = acc.replace(/[^a-zA-Z0-9]/g, '');
                     const el = document.getElementById(`bal-${cleanKey}`);
                     const b = d.balances[acc] || 0;
-                    combinedBalance += b;
                     if (el) el.textContent = formatINR(b);
                 });
             }
-            document.getElementById('dash-total-combined').textContent = `Total In Hand: ${formatINR(combinedBalance)}`;
-
-            // Update Savings Tab
-            if (d.savings && d.savings.length > 0) {
-                const tbody = document.getElementById('savings-table-body');
-                if (tbody) {
-                    tbody.innerHTML = d.savings.map(s => {
-                        const target = parseFloat(s.target) || 1;
-                        const acc = parseFloat(s.accumulated) || 0;
-                        const pct = Math.min(100, Math.round((acc / target) * 100));
-                        return `
-                            <tr>
-                                <td><strong>${s.fundName}</strong></td>
-                                <td>${formatINR(target)}</td>
-                                <td>${formatINR(acc)}</td>
-                                <td>${pct}%</td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
-            }
         }
     } catch (err) {
-        console.warn("Dashboard sync failed (check connection/endpoint):", err);
+        console.warn("Could not sync metrics:", err);
     }
 }
