@@ -13,6 +13,8 @@ const SAVINGS_FUNDS = [
     "Yearly Travelling Fund"
 ];
 
+let cachedTransactions = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
     const dateInput = document.getElementById('tx-date');
@@ -351,29 +353,132 @@ async function loadTransactionHistory() {
 
         const res = await response.json();
         if (res.status === "success") {
-            const list = res.data;
-            if (list.length === 0) {
+            cachedTransactions = res.data;
+            if (cachedTransactions.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">No transactions found for ${month} ${year}.</td></tr>`;
             } else {
-                tbody.innerHTML = list.map(tx => `
-                    <tr>
-                        <td>${new Date(tx.date).toLocaleDateString('en-GB')}</td>
-                        <td>${tx.type}</td>
-                        <td>${tx.category}</td>
-                        <td>${tx.account}</td>
-                        <td>${tx.description || '-'}</td>
-                        <td><strong>${formatINR(tx.amount)}</strong></td>
-                        <td>
-                            <button class="btn-delete" onclick="deleteRecord('${tx.transactionId}')">Delete</button>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = cachedTransactions.map(tx => {
+                    const accDisplay = tx.accountName || (tx.sourceAccount + " → " + tx.destAccount) || '-';
+                    const formattedDate = new Date(tx.date).toLocaleDateString('en-GB');
+                    return `
+                        <tr>
+                            <td>${formattedDate}</td>
+                            <td>${tx.transactionType}</td>
+                            <td>${tx.category || tx.customCategory || '-'}</td>
+                            <td>${accDisplay}</td>
+                            <td>${tx.description || '-'}</td>
+                            <td><strong>${formatINR(tx.amount)}</strong></td>
+                            <td style="text-align: center;">
+                                <div class="btn-action-group">
+                                    <button class="btn-edit" onclick="openEditModal('${tx.transactionId}')">Edit</button>
+                                    <button class="btn-delete" onclick="deleteRecord('${tx.transactionId}')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
     } catch (err) {
         tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to load records: ${err.message}</td></tr>`;
     } finally {
         loader.classList.add('hidden');
+    }
+}
+
+function openEditModal(transactionId) {
+    const tx = cachedTransactions.find(t => String(t.transactionId) === String(transactionId));
+    if (!tx) return;
+
+    document.getElementById('edit-tx-id').value = tx.transactionId;
+    
+    const formattedDate = new Date(tx.date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    document.getElementById('edit-tx-date').value = formattedDate;
+    document.getElementById('edit-tx-amount').value = tx.amount;
+    document.getElementById('edit-tx-desc').value = tx.description || '';
+
+    const dynamicContainer = document.getElementById('edit-dynamic-fields');
+    const accountOpts = ACCOUNTS.map(a => `<option value="${a}" ${a === (tx.accountName || tx.sourceAccount) ? 'selected' : ''}>${a}</option>`).join('');
+
+    let extraHtml = '';
+    if (tx.transactionType === "Transfer") {
+        const destOpts = ACCOUNTS.map(a => `<option value="${a}" ${a === tx.destAccount ? 'selected' : ''}>${a}</option>`).join('');
+        extraHtml = `
+            <div class="form-group">
+                <label>From Account</label>
+                <select id="edit-tx-source">${accountOpts}</select>
+            </div>
+            <div class="form-group">
+                <label>To Account</label>
+                <select id="edit-tx-dest">${destOpts}</select>
+            </div>
+        `;
+    } else {
+        extraHtml = `
+            <div class="form-group">
+                <label>Account</label>
+                <select id="edit-tx-account">${accountOpts}</select>
+            </div>
+        `;
+    }
+
+    dynamicContainer.innerHTML = extraHtml;
+    document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+    document.getElementById('edit-modal').classList.add('hidden');
+}
+
+async function saveEditedTransaction() {
+    const txId = document.getElementById('edit-tx-id').value;
+    const tx = cachedTransactions.find(t => String(t.transactionId) === String(txId));
+    if (!tx) return;
+
+    const amount = parseFloat(document.getElementById('edit-tx-amount').value);
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid positive amount.");
+        return;
+    }
+
+    const saveBtn = document.getElementById('edit-save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Updating...";
+
+    const updatedData = {
+        ...tx,
+        date: document.getElementById('edit-tx-date').value,
+        amount: amount,
+        description: document.getElementById('edit-tx-desc').value,
+        accountName: document.getElementById('edit-tx-account') ? document.getElementById('edit-tx-account').value : tx.accountName,
+        sourceAccount: document.getElementById('edit-tx-source') ? document.getElementById('edit-tx-source').value : tx.sourceAccount,
+        destAccount: document.getElementById('edit-tx-dest') ? document.getElementById('edit-tx-dest').value : tx.destAccount
+    };
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: "updateTransaction",
+                data: updatedData
+            })
+        });
+
+        const res = await response.json();
+        if (res.status === "success") {
+            alert(res.message);
+            closeEditModal();
+            loadTransactionHistory();
+            fetchDashboardMetrics();
+        } else {
+            alert("Error: " + res.message);
+        }
+    } catch (err) {
+        alert("Update failed: " + err.message);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Changes";
     }
 }
 
