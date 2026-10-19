@@ -35,6 +35,10 @@ function switchTab(tabId) {
     if (window.event && window.event.currentTarget) {
         window.event.currentTarget.classList.add('active');
     }
+
+    if (tabId === 'transaction-history') {
+        loadTransactionHistory();
+    }
 }
 
 function formatINR(val) {
@@ -323,6 +327,81 @@ async function saveTransaction() {
     } finally {
         btn.disabled = false;
         loader.classList.add('hidden');
+    }
+}
+
+async function loadTransactionHistory() {
+    const month = document.getElementById('dash-month').value;
+    const year = document.getElementById('dash-year').value;
+    const tbody = document.getElementById('history-table-body');
+    const loader = document.getElementById('history-loader');
+
+    loader.classList.remove('hidden');
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: "getTransactions",
+                month: month,
+                year: year
+            })
+        });
+
+        const res = await response.json();
+        if (res.status === "success") {
+            const list = res.data;
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">No transactions found for ${month} ${year}.</td></tr>`;
+            } else {
+                tbody.innerHTML = list.map(tx => `
+                    <tr>
+                        <td>${new Date(tx.date).toLocaleDateString('en-GB')}</td>
+                        <td>${tx.type}</td>
+                        <td>${tx.category}</td>
+                        <td>${tx.account}</td>
+                        <td>${tx.description || '-'}</td>
+                        <td><strong>${formatINR(tx.amount)}</strong></td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteRecord('${tx.transactionId}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to load records: ${err.message}</td></tr>`;
+    } finally {
+        loader.classList.add('hidden');
+    }
+}
+
+async function deleteRecord(transactionId) {
+    if (!confirm("Are you sure you want to delete this transaction? Balances will be recalculated.")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: "deleteTransaction",
+                transactionId: transactionId
+            })
+        });
+
+        const res = await response.json();
+        if (res.status === "success") {
+            alert(res.message);
+            loadTransactionHistory();
+            fetchDashboardMetrics();
+        } else {
+            alert("Error: " + res.message);
+        }
+    } catch (err) {
+        alert("Delete failed: " + err.message);
     }
 }
 
