@@ -4,8 +4,382 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Accounting App</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-green: #1A4D2E;
+            --dark-green-hover: #143d24;
+            --soft-grey: #F8FAFC;
+            --gold: #D4AF37;
+            --white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --danger: #EF4444;
+            --success: #10B981;
+            --primary-blue: #2563EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--soft-grey);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-green);
+            color: var(--white);
+            padding: 24px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar .logo {
+            padding: 0 24px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar .logo h2 {
+            color: var(--gold);
+            font-size: 20px;
+        }
+
+        .sidebar .logo span {
+            font-size: 12px;
+            color: #CBD5E1;
+        }
+
+        .nav-links li {
+            list-style: none;
+            padding: 14px 24px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-links li:hover, .nav-links li.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--gold);
+        }
+
+        .content {
+            flex: 1;
+            padding: 36px 48px;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            color: var(--dark-green);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .period-selector select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--white);
+        }
+
+        .btn-refresh {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .showcase-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--dark-green);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .card-gold {
+            border-left-color: var(--gold);
+        }
+
+        .card-blue {
+            border-left-color: var(--primary-blue);
+        }
+
+        .card h3 {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            color: var(--dark-green);
+            margin-bottom: 6px;
+        }
+
+        .grid-balances {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .account-card {
+            background: var(--white);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .account-card h4 {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .account-card p {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark-green);
+        }
+
+        .form-container {
+            background: var(--white);
+            padding: 28px;
+            border-radius: 8px;
+            max-width: 580px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 15px;
+            background: var(--white);
+        }
+
+        .btn-primary {
+            background-color: var(--dark-green);
+            color: var(--white);
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .btn-secondary {
+            background-color: #E2E8F0;
+            color: var(--text-dark);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-action-group {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .btn-edit {
+            background-color: #DBEAFE;
+            color: var(--primary-blue);
+            border: 1px solid #BFDBFE;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .btn-delete {
+            background-color: #FEE2E2;
+            color: var(--danger);
+            border: 1px solid #FECACA;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .badge-receive {
+            background: #DCFCE7;
+            color: #166534;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .badge-pay {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #loader, #ob-loader, #history-loader, #party-loader {
+            margin-top: 14px;
+            padding: 12px;
+            background: #FEF3C7;
+            color: #92400E;
+            border-radius: 6px;
+            max-width: 580px;
+        }
+
+        #notification, #ob-notification {
+            padding: 14px;
+            border-radius: 6px;
+            margin-top: 14px;
+            max-width: 580px;
+            font-weight: 600;
+        }
+
+        .notif-success {
+            background: #DCFCE7;
+            color: #166534;
+            border: 1px solid #BBF7D0;
+        }
+
+        .notif-error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .table-container {
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .report-table th, .report-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .report-table th {
+            background: #F1F5F9;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-box {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .modal-box h2 {
+            color: var(--dark-green);
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <nav class="sidebar">
@@ -16,13 +390,14 @@
         <ul class="nav-links">
             <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
             <li onclick="switchTab('transaction-entry')">Add Transaction</li>
+            <li onclick="switchTab('party-ledgers')">Party Ledgers</li>
             <li onclick="switchTab('transaction-history')">Transaction History</li>
             <li onclick="switchTab('opening-balances')">Opening Balances</li>
         </ul>
     </nav>
 
     <main class="content">
-        <!-- DASHBOARD TAB -->
+        <!-- TAB 1: DASHBOARD -->
         <section id="dashboard" class="tab-content active">
             <header>
                 <div>
@@ -70,18 +445,37 @@
                 </div>
             </div>
 
+            <!-- NEW DASHBOARD SHOWCASE CARDS (POINT 8) -->
+            <div class="showcase-cards">
+                <div class="card card-gold">
+                    <h3>Saving Fund Progress</h3>
+                    <h2 id="dash-savings-completed">₹0.00</h2>
+                    <small>Target: ₹84,00,000.00 | Remaining: <span id="dash-savings-remaining">₹84,00,000.00</span></small>
+                </div>
+                <div class="card card-blue">
+                    <h3>Share of God Reserve</h3>
+                    <h2 id="dash-sog-balance">₹0.00</h2>
+                    <small>Accumulated God Reserve Balance</small>
+                </div>
+                <div class="card">
+                    <h3>Indirect Ledgers Status</h3>
+                    <h2 id="dash-indirect-summary">0 Due / 0 Owed</h2>
+                    <small id="dash-indirect-details">Active loans & projects summary</small>
+                </div>
+            </div>
+
             <div class="account-balances">
                 <h3 style="margin-bottom: 16px;">Current Account Balances (9 Master Accounts)</h3>
                 <div class="grid-balances" id="balance-grid"></div>
             </div>
         </section>
 
-        <!-- ADD TRANSACTION TAB -->
+        <!-- TAB 2: ADD TRANSACTION -->
         <section id="transaction-entry" class="tab-content">
             <header>
                 <div>
                     <h1>Add Transaction</h1>
-                    <p class="subtitle">Log income, expense, transfer, or fund allocation</p>
+                    <p class="subtitle">Log income, expense, transfer, or party inflow/outflow</p>
                 </div>
             </header>
             
@@ -129,7 +523,36 @@
             <div id="notification" class="hidden"></div>
         </section>
 
-        <!-- TRANSACTION HISTORY TAB (EDIT & DELETE) -->
+        <!-- TAB 3: PARTY LEDGERS -->
+        <section id="party-ledgers" class="tab-content">
+            <header>
+                <div>
+                    <h1>Party & Project Ledgers (Double Entry)</h1>
+                    <p class="subtitle">Positive = Due to me (+) | Negative = Owed by me (-)</p>
+                </div>
+                <button class="btn-refresh" onclick="loadPartyLedgers()">↻ Refresh Ledgers</button>
+            </header>
+
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Party / Project Name</th>
+                            <th>Total Given (Outflow)</th>
+                            <th>Total Taken (Inflow)</th>
+                            <th>Net Balance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="party-table-body">
+                        <tr><td colspan="5" style="text-align: center;">Click "Refresh Ledgers" to view records.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="party-loader" class="hidden">Loading party ledgers...</div>
+        </section>
+
+        <!-- TAB 4: TRANSACTION HISTORY -->
         <section id="transaction-history" class="tab-content">
             <header>
                 <div>
@@ -160,12 +583,12 @@
             <div id="history-loader" class="hidden">Loading transactions...</div>
         </section>
 
-        <!-- OPENING BALANCES SETUP TAB -->
+        <!-- TAB 5: OPENING BALANCES SETUP -->
         <section id="opening-balances" class="tab-content">
             <header>
                 <div>
                     <h1>Initial Opening Balances</h1>
-                    <p class="subtitle">Set up starting balances for your 9 accounts</p>
+                    <p class="subtitle">9 Accounts & Special Indirect Ledgers</p>
                 </div>
             </header>
 
@@ -197,7 +620,17 @@
                     </select>
                 </div>
 
-                <div id="ob-inputs-container" style="margin-top: 20px;"></div>
+                <h4 style="margin: 20px 0 10px 0; color: var(--dark-green);">9 Accounts Opening Balance</h4>
+                <div id="ob-inputs-container"></div>
+
+                <h4 style="margin: 24px 0 10px 0; color: var(--dark-green);">Special Ledgers Opening Balance</h4>
+                <div id="ob-special-container"></div>
+
+                <div class="form-group" style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+                    <label>Add New Category Opening Balance</label>
+                    <input type="text" id="ob-custom-name" placeholder="Category Name" style="margin-bottom: 8px;">
+                    <input type="number" step="0.01" id="ob-custom-val" placeholder="Opening Amount (₹) (Use - for Owed)">
+                </div>
 
                 <button type="button" class="btn-primary" onclick="submitOpeningBalances()" id="ob-save-btn" style="margin-top: 20px;">
                     Save Opening Balances
@@ -209,33 +642,843 @@
         </section>
     </main>
 
-    <!-- EDIT TRANSACTION MODAL -->
+    <!-- 2-STEP EDIT TRANSACTION MODAL (POINT 2) -->
     <div id="edit-modal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2>Edit Transaction</h2>
             <input type="hidden" id="edit-tx-id">
-            
-            <div class="form-group">
-                <label>Date *</label>
-                <input type="date" id="edit-tx-date" required>
-            </div>
-            <div class="form-group">
-                <label>Amount (₹) *</label>
-                <input type="number" id="edit-tx-amount" min="1" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <input type="text" id="edit-tx-desc">
-            </div>
-            <div id="edit-dynamic-fields"></div>
 
-            <div class="btn-group" style="margin-top: 24px;">
-                <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
-                <button type="button" class="btn-primary" onclick="saveEditedTransaction()" id="edit-save-btn">Save Changes</button>
+            <!-- EDIT STEP 1 -->
+            <div id="edit-step-1">
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="edit-tx-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Transaction Type *</label>
+                    <select id="edit-tx-type" required>
+                        <option value="Direct Income">Direct Income</option>
+                        <option value="Indirect Inflow">Indirect Inflow</option>
+                        <option value="Direct Expenditure">Direct Expenditure</option>
+                        <option value="Indirect Outflow">Indirect Outflow</option>
+                        <option value="Savings Funds">Savings Funds</option>
+                        <option value="Transfer">Transfer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="edit-tx-desc">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="button" class="btn-primary" onclick="nextEditStep()">Continue to Step 2 →</button>
+                </div>
+            </div>
+
+            <!-- EDIT STEP 2 -->
+            <div id="edit-step-2" class="hidden">
+                <div id="edit-dynamic-fields"></div>
+                <div class="form-group">
+                    <label>Amount (₹) *</label>
+                    <input type="number" id="edit-tx-amount" min="1" step="0.01" required>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn-secondary" onclick="prevEditStep()">← Back</button>
+                    <button type="button" class="btn-primary" onclick="saveEditedTransaction()" id="edit-save-btn">Save Changes</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT URL ENDING IN /exec
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtucWSlm4kBxpCLN3xefz0MYM-EuccvdaRas8d2mqqNd-Q5hCPJh3H5rjdpqp4QNB/exec';
+
+        const ACCOUNTS = [
+            "My Purse", "Home Cash Bag", "My Sbi", "My Cbi", 
+            "Binita's Sbi", "Binita's Cash", "Punni's Sbi", "Punni's Cash", "Maa Bank"
+        ];
+
+        const TRANSFER_TYPES = ["Cash to Cash", "Cash to Bank", "Bank to Bank", "Bank to Cash"];
+
+        let indirectCategories = [
+            "Plots & Land", "Project Road", "Rayati Royalty", "Security Guard", "Share of God"
+        ];
+
+        const TOTAL_SAVINGS_TARGET = 8400000; // Total targets across all goals
+
+        let cachedTransactions = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            const dateInput = document.getElementById('tx-date');
+            if (dateInput) dateInput.value = today;
+
+            renderAccountGrid();
+            renderOpeningBalanceInputs();
+
+            if (SCRIPT_URL && !SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) {
+                fetchDashboardMetrics();
+                loadPartyLedgers();
+            }
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+            
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+            if (window.event && window.event.currentTarget) {
+                window.event.currentTarget.classList.add('active');
+            }
+
+            if (tabId === 'transaction-history') {
+                loadTransactionHistory();
+            } else if (tabId === 'party-ledgers') {
+                loadPartyLedgers();
+            }
+        }
+
+        function formatINR(val) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 2
+            }).format(val || 0);
+        }
+
+        function renderAccountGrid() {
+            const grid = document.getElementById('balance-grid');
+            if (!grid) return;
+            grid.innerHTML = ACCOUNTS.map(acc => `
+                <div class="account-card">
+                    <h4>${acc}</h4>
+                    <p id="bal-${acc.replace(/[^a-zA-Z0-9]/g, '')}">₹0.00</p>
+                </div>
+            `).join('');
+        }
+
+        function renderOpeningBalanceInputs() {
+            const container = document.getElementById('ob-inputs-container');
+            const specialContainer = document.getElementById('ob-special-container');
+            if (!container || !specialContainer) return;
+
+            container.innerHTML = ACCOUNTS.map(acc => `
+                <div class="form-group">
+                    <label>${acc} (₹)</label>
+                    <input type="number" step="0.01" class="ob-amount-input" data-account="${acc}" placeholder="0.00" value="0">
+                </div>
+            `).join('');
+
+            specialContainer.innerHTML = indirectCategories.map(cat => `
+                <div class="form-group">
+                    <label>${cat} Opening Balance (₹)</label>
+                    <input type="number" step="0.01" class="ob-amount-input" data-account="${cat}" placeholder="0.00" value="0">
+                </div>
+            `).join('');
+        }
+
+        function nextStep() {
+            const date = document.getElementById('tx-date').value;
+            const type = document.getElementById('tx-type').value;
+
+            if (!date || !type) {
+                alert("Please select both Date and Transaction Type.");
+                return;
+            }
+
+            buildDynamicFields(type);
+            document.getElementById('step-1').classList.remove('active');
+            document.getElementById('step-2').classList.add('active');
+        }
+
+        function prevStep() {
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-1').classList.add('active');
+        }
+
+        function handleCategorySelectChange(selectElem, customWrapperId) {
+            const wrapper = document.getElementById(customWrapperId);
+            if (wrapper) {
+                wrapper.classList.toggle('hidden', selectElem.value !== 'Add New Category');
+            }
+        }
+
+        function buildDynamicFields(type) {
+            const container = document.getElementById('dynamic-fields');
+            let html = '';
+            const accountOpts = ACCOUNTS.map(a => `<option value="${a}">${a}</option>`).join('');
+            const transferTypeOpts = TRANSFER_TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
+
+            const catOptions = indirectCategories.map(c => `<option value="${c}">${c}</option>`).join('') + 
+                               `<option value="Add New Category">+ Add New Category</option>`;
+
+            if (type === "Direct Income") {
+                html = `
+                    <div class="form-group">
+                        <label>Direct Income Category *</label>
+                        <select id="tx-category">
+                            <option value="JIO TOWER">JIO TOWER</option>
+                            <option value="PLOTS & LAND">PLOTS & LAND</option>
+                            <option value="PROJECT ROAD">PROJECT ROAD</option>
+                            <option value="RAYATI ROYALTY">RAYATI ROYALTY</option>
+                            <option value="SECURITY GUARD">SECURITY GUARD</option>
+                            <option value="OTHERS">OTHERS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Type</label>
+                        <select id="tx-account-type">
+                            <option value="Bank">Bank</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Receiving Account *</label>
+                        <select id="tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Indirect Inflow") {
+                // POINT 3: Indirect Inflow Category + Add New Category + Receiving Account
+                html = `
+                    <div class="form-group">
+                        <label>Indirect Inflow Category *</label>
+                        <select id="tx-category" onchange="handleCategorySelectChange(this, 'inflow-custom-wrapper')">
+                            ${catOptions}
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="inflow-custom-wrapper">
+                        <label>New Category Name *</label>
+                        <input type="text" id="tx-custom-category" placeholder="Type new category name">
+                    </div>
+                    <div class="form-group">
+                        <label>Receiving Account *</label>
+                        <select id="tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Direct Expenditure") {
+                html = `
+                    <div class="form-group">
+                        <label>Direct Expenditure Category *</label>
+                        <select id="tx-category">
+                            <option value="Dress & Fashion">Dress & Fashion</option>
+                            <option value="Electric Bill">Electric Bill</option>
+                            <option value="Family">Family</option>
+                            <option value="Festive">Festive</option>
+                            <option value="Gas">Gas</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Home Décor">Home Décor</option>
+                            <option value="Home Others">Home Others</option>
+                            <option value="Medical Purpose">Medical Purpose</option>
+                            <option value="Milk">Milk</option>
+                            <option value="Mobile">Mobile</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Social">Social</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Bonku's Education">Bonku's Education</option>
+                            <option value="Suspense">Suspense</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Deducted *</label>
+                        <select id="tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Indirect Outflow") {
+                // POINT 4: Indirect Outflow Category + Add New Category + Account Deducted
+                html = `
+                    <div class="form-group">
+                        <label>Indirect Outflow Category *</label>
+                        <select id="tx-category" onchange="handleCategorySelectChange(this, 'outflow-custom-wrapper')">
+                            ${catOptions}
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="outflow-custom-wrapper">
+                        <label>New Category Name *</label>
+                        <input type="text" id="tx-custom-category" placeholder="Type new category name">
+                    </div>
+                    <div class="form-group">
+                        <label>Account Deducted *</label>
+                        <select id="tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Savings Funds") {
+                // POINT 1: Saving Fund treated as Transfer Fund
+                html = `
+                    <div class="form-group">
+                        <label>Transfer Type *</label>
+                        <select id="tx-transfer-type">${transferTypeOpts}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>From Account (Subtraction) *</label>
+                        <select id="tx-source">${accountOpts}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>To Account (Addition) *</label>
+                        <select id="tx-dest">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Transfer") {
+                html = `
+                    <div class="form-group">
+                        <label>Transfer Type *</label>
+                        <select id="tx-transfer-type">${transferTypeOpts}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>From Account (Subtraction) *</label>
+                        <select id="tx-source">${accountOpts}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>To Account (Addition) *</label>
+                        <select id="tx-dest">${accountOpts}</select>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        async function saveTransaction() {
+            const btn = document.getElementById('save-btn');
+            const loader = document.getElementById('loader');
+            const notif = document.getElementById('notification');
+
+            const amountVal = document.getElementById('tx-amount').value;
+            const amount = parseFloat(amountVal);
+
+            if (!amountVal || isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid positive number for Amount.");
+                return;
+            }
+
+            const type = document.getElementById('tx-type').value;
+            const sourceAcc = document.getElementById('tx-source') ? document.getElementById('tx-source').value : null;
+            const destAcc = document.getElementById('tx-dest') ? document.getElementById('tx-dest').value : null;
+            let category = document.getElementById('tx-category') ? document.getElementById('tx-category').value : "";
+            const customCatInput = document.getElementById('tx-custom-category');
+            const customCategory = customCatInput ? customCatInput.value.trim() : "";
+
+            if (category === "Add New Category") {
+                if (!customCategory) {
+                    alert("Please type the New Category Name.");
+                    return;
+                }
+                category = customCategory;
+                if (!indirectCategories.includes(customCategory)) {
+                    indirectCategories.push(customCategory);
+                    renderOpeningBalanceInputs();
+                }
+            }
+
+            if ((type === "Transfer" || type === "Savings Funds") && sourceAcc === destAcc) {
+                alert("From Account and To Account cannot be the same.");
+                return;
+            }
+
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            notif.classList.add('hidden');
+
+            const payload = {
+                action: "saveTransaction",
+                data: {
+                    transactionId: 'TX-' + Date.now(),
+                    date: document.getElementById('tx-date').value,
+                    transactionType: type,
+                    description: document.getElementById('tx-desc').value || "",
+                    amount: amount,
+                    category: category,
+                    customCategory: customCategory,
+                    accountType: document.getElementById('tx-account-type') ? document.getElementById('tx-account-type').value : "",
+                    accountName: document.getElementById('tx-account') ? document.getElementById('tx-account').value : "",
+                    personName: category, // Category serves as ledger name for Double Entry
+                    transferType: document.getElementById('tx-transfer-type') ? document.getElementById('tx-transfer-type').value : "",
+                    sourceAccount: sourceAcc,
+                    destAccount: destAcc,
+                    savingsFundName: ""
+                }
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    notif.textContent = "Transaction saved successfully! (ID: " + result.transactionId + ")";
+                    notif.className = 'notif-success';
+                    notif.classList.remove('hidden');
+
+                    document.getElementById('tx-amount').value = '';
+                    document.getElementById('tx-desc').value = '';
+                    prevStep();
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    throw new Error(result.message || "Failed to save record.");
+                }
+            } catch (error) {
+                notif.textContent = "Error: " + error.message;
+                notif.className = 'notif-error';
+                notif.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function loadPartyLedgers() {
+            if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
+            const tbody = document.getElementById('party-table-body');
+            const loader = document.getElementById('party-loader');
+
+            loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "getPartyLedgers" })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    const parties = res.data;
+                    
+                    parties.forEach(p => {
+                        if (p.name && !indirectCategories.includes(p.name)) {
+                            indirectCategories.push(p.name);
+                        }
+                    });
+
+                    if (parties.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No party ledger entries found.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = parties.map(p => {
+                            let badge = '';
+                            let balDisplay = formatINR(Math.abs(p.balance));
+
+                            // POINT 5: Positive = Due to me, Negative = Owed by me
+                            if (p.balance > 0) {
+                                badge = `<span class="badge-receive">Due to me (+)</span>`;
+                            } else if (p.balance < 0) {
+                                badge = `<span class="badge-pay">Owed by me (-)</span>`;
+                            } else {
+                                badge = `<span style="color:#64748B; font-weight:600;">Settled (₹0.00)</span>`;
+                            }
+
+                            return `
+                                <tr>
+                                    <td><strong>${p.name}</strong></td>
+                                    <td>${formatINR(p.totalGiven)}</td>
+                                    <td>${formatINR(p.totalTaken)}</td>
+                                    <td><strong>${p.balance < 0 ? '-' : (p.balance > 0 ? '+' : '')} ${balDisplay}</strong></td>
+                                    <td>${badge}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Failed to load ledgers: ${err.message}</td></tr>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function loadTransactionHistory() {
+            const month = document.getElementById('dash-month').value;
+            const year = document.getElementById('dash-year').value;
+            const tbody = document.getElementById('history-table-body');
+            const loader = document.getElementById('history-loader');
+
+            loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "getTransactions",
+                        month: month,
+                        year: year
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    cachedTransactions = res.data;
+                    if (cachedTransactions.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">No transactions found for ${month} ${year}.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = cachedTransactions.map(tx => {
+                            const accDisplay = tx.accountName || (tx.sourceAccount + " → " + tx.destAccount) || '-';
+                            const formattedDate = new Date(tx.date).toLocaleDateString('en-GB');
+                            return `
+                                <tr>
+                                    <td>${formattedDate}</td>
+                                    <td>${tx.transactionType}</td>
+                                    <td>${tx.category || '-'}</td>
+                                    <td>${accDisplay}</td>
+                                    <td>${tx.description || '-'}</td>
+                                    <td><strong>${formatINR(tx.amount)}</strong></td>
+                                    <td style="text-align: center;">
+                                        <div class="btn-action-group">
+                                            <button class="btn-edit" onclick="openEditModal('${tx.transactionId}')">Edit</button>
+                                            <button class="btn-delete" onclick="deleteRecord('${tx.transactionId}')">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Failed to load records: ${err.message}</td></tr>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        // POINT 2: 2-STEP EDIT WORKFLOW
+        function openEditModal(transactionId) {
+            const tx = cachedTransactions.find(t => String(t.transactionId) === String(transactionId));
+            if (!tx) return;
+
+            document.getElementById('edit-tx-id').value = tx.transactionId;
+            const formattedDate = new Date(tx.date).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            document.getElementById('edit-tx-date').value = formattedDate;
+            document.getElementById('edit-tx-type').value = tx.transactionType;
+            document.getElementById('edit-tx-desc').value = tx.description || '';
+            document.getElementById('edit-tx-amount').value = tx.amount;
+
+            // Reset back to Edit Step 1
+            document.getElementById('edit-step-1').classList.remove('hidden');
+            document.getElementById('edit-step-2').classList.add('hidden');
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function nextEditStep() {
+            const txType = document.getElementById('edit-tx-type').value;
+            const txId = document.getElementById('edit-tx-id').value;
+            const tx = cachedTransactions.find(t => String(t.transactionId) === String(txId));
+
+            buildEditDynamicFields(txType, tx);
+            document.getElementById('edit-step-1').classList.add('hidden');
+            document.getElementById('edit-step-2').classList.remove('hidden');
+        }
+
+        function prevEditStep() {
+            document.getElementById('edit-step-2').classList.add('hidden');
+            document.getElementById('edit-step-1').classList.remove('hidden');
+        }
+
+        function buildEditDynamicFields(type, tx) {
+            const container = document.getElementById('edit-dynamic-fields');
+            let html = '';
+            const accountOpts = ACCOUNTS.map(a => `<option value="${a}" ${a === (tx.accountName || tx.sourceAccount) ? 'selected' : ''}>${a}</option>`).join('');
+            const transferTypeOpts = TRANSFER_TYPES.map(t => `<option value="${t}" ${t === tx.transferType ? 'selected' : ''}>${t}</option>`).join('');
+
+            const catOptions = indirectCategories.map(c => `<option value="${c}" ${c === tx.category ? 'selected' : ''}>${c}</option>`).join('') +
+                               `<option value="Add New Category">+ Add New Category</option>`;
+
+            if (type === "Indirect Inflow" || type === "Indirect Outflow") {
+                html = `
+                    <div class="form-group">
+                        <label>${type} Category *</label>
+                        <select id="edit-tx-category" onchange="handleCategorySelectChange(this, 'edit-custom-wrapper')">
+                            ${catOptions}
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="edit-custom-wrapper">
+                        <label>New Category Name *</label>
+                        <input type="text" id="edit-tx-custom" placeholder="Type new category name">
+                    </div>
+                    <div class="form-group">
+                        <label>Account *</label>
+                        <select id="edit-tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Transfer" || type === "Savings Funds") {
+                const destOpts = ACCOUNTS.map(a => `<option value="${a}" ${a === tx.destAccount ? 'selected' : ''}>${a}</option>`).join('');
+                html = `
+                    <div class="form-group">
+                        <label>Transfer Type *</label>
+                        <select id="edit-tx-transfer-type">${transferTypeOpts}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>From Account *</label>
+                        <select id="edit-tx-source">${accountOpts}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>To Account *</label>
+                        <select id="edit-tx-dest">${destOpts}</select>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="edit-tx-category-text" value="${tx.category || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Account *</label>
+                        <select id="edit-tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        async function saveEditedTransaction() {
+            const txId = document.getElementById('edit-tx-id').value;
+            const tx = cachedTransactions.find(t => String(t.transactionId) === String(txId));
+            if (!tx) return;
+
+            const amount = parseFloat(document.getElementById('edit-tx-amount').value);
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid positive amount.");
+                return;
+            }
+
+            const txType = document.getElementById('edit-tx-type').value;
+            let category = tx.category;
+
+            if (document.getElementById('edit-tx-category')) {
+                category = document.getElementById('edit-tx-category').value;
+                if (category === "Add New Category") {
+                    const custom = document.getElementById('edit-tx-custom').value.trim();
+                    if (!custom) {
+                        alert("Please type the New Category Name.");
+                        return;
+                    }
+                    category = custom;
+                    if (!indirectCategories.includes(custom)) indirectCategories.push(custom);
+                }
+            } else if (document.getElementById('edit-tx-category-text')) {
+                category = document.getElementById('edit-tx-category-text').value.trim();
+            }
+
+            const saveBtn = document.getElementById('edit-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Updating...";
+
+            const updatedData = {
+                ...tx,
+                date: document.getElementById('edit-tx-date').value,
+                transactionType: txType,
+                amount: amount,
+                category: category,
+                personName: category,
+                description: document.getElementById('edit-tx-desc').value,
+                accountName: document.getElementById('edit-tx-account') ? document.getElementById('edit-tx-account').value : tx.accountName,
+                transferType: document.getElementById('edit-tx-transfer-type') ? document.getElementById('edit-tx-transfer-type').value : tx.transferType,
+                sourceAccount: document.getElementById('edit-tx-source') ? document.getElementById('edit-tx-source').value : tx.sourceAccount,
+                destAccount: document.getElementById('edit-tx-dest') ? document.getElementById('edit-tx-dest').value : tx.destAccount
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "updateTransaction",
+                        data: updatedData
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    alert(res.message);
+                    closeEditModal();
+                    loadTransactionHistory();
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            } catch (err) {
+                alert("Update failed: " + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+            }
+        }
+
+        async function deleteRecord(transactionId) {
+            if (!confirm("Are you sure you want to delete this transaction? Balances will be recalculated.")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "deleteTransaction",
+                        transactionId: transactionId
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    alert(res.message);
+                    loadTransactionHistory();
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            } catch (err) {
+                alert("Delete failed: " + err.message);
+            }
+        }
+
+        // POINT 7: Opening balances with 9 accounts + special indirect ledgers
+        async function submitOpeningBalances() {
+            const btn = document.getElementById('ob-save-btn');
+            const loader = document.getElementById('ob-loader');
+            const notif = document.getElementById('ob-notification');
+            const year = document.getElementById('ob-year').value;
+            const month = document.getElementById('ob-month').value;
+
+            const balances = {};
+            document.querySelectorAll('.ob-amount-input').forEach(input => {
+                const acc = input.getAttribute('data-account');
+                balances[acc] = parseFloat(input.value) || 0;
+            });
+
+            // Add new custom category opening balance if entered
+            const customName = document.getElementById('ob-custom-name').value.trim();
+            const customVal = parseFloat(document.getElementById('ob-custom-val').value) || 0;
+            if (customName) {
+                balances[customName] = customVal;
+                if (!indirectCategories.includes(customName)) {
+                    indirectCategories.push(customName);
+                    renderOpeningBalanceInputs();
+                }
+            }
+
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            notif.classList.add('hidden');
+
+            const payload = {
+                action: "saveOpeningBalances",
+                data: {
+                    year: year,
+                    month: month,
+                    balances: balances
+                }
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.status === "success") {
+                    notif.textContent = result.message;
+                    notif.className = 'notif-success';
+                    notif.classList.remove('hidden');
+
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    throw new Error(result.message || "Failed to save opening balances.");
+                }
+            } catch (err) {
+                notif.textContent = "Error: " + err.message;
+                notif.className = 'notif-error';
+                notif.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+            }
+        }
+
+        // POINT 8: DASHBOARD SHOWCASE METRICS
+        async function fetchDashboardMetrics() {
+            if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
+
+            const month = document.getElementById('dash-month').value;
+            const year = document.getElementById('dash-year').value;
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "getDashboard",
+                        month: month,
+                        year: year
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    const d = res.data;
+
+                    document.getElementById('dash-total-income').textContent = formatINR(d.totalIncome);
+                    document.getElementById('dash-direct-income').textContent = formatINR(d.directIncome);
+                    document.getElementById('dash-indirect-income').textContent = formatINR(d.indirectInflow);
+
+                    document.getElementById('dash-total-expense').textContent = formatINR(d.totalExpense);
+                    document.getElementById('dash-direct-expense').textContent = formatINR(d.directExpense);
+                    document.getElementById('dash-indirect-expense').textContent = formatINR(d.indirectOutflow);
+
+                    const net = d.totalIncome - d.totalExpense;
+                    document.getElementById('dash-net-flow').textContent = formatINR(net);
+
+                    // Showcase a: Saving Fund Progress
+                    const completedSavings = d.totalSavingsCompleted || 0;
+                    document.getElementById('dash-savings-completed').textContent = formatINR(completedSavings);
+                    const remaining = Math.max(0, TOTAL_SAVINGS_TARGET - completedSavings);
+                    document.getElementById('dash-savings-remaining').textContent = formatINR(remaining);
+
+                    // Showcase b: Share of God reserve
+                    document.getElementById('dash-sog-balance').textContent = formatINR(d.accumulatedShareOfGod || 0);
+
+                    // Showcase c: Indirect Ledgers Owed vs Due
+                    if (d.partyLedgers) {
+                        let totalDue = 0;
+                        let totalOwed = 0;
+                        d.partyLedgers.forEach(p => {
+                            if (p.balance > 0) totalDue += p.balance;
+                            else if (p.balance < 0) totalOwed += Math.abs(p.balance);
+                        });
+                        document.getElementById('dash-indirect-summary').textContent = `Due: ${formatINR(totalDue)} | Owed: ${formatINR(totalOwed)}`;
+                    }
+
+                    if (d.balances) {
+                        ACCOUNTS.forEach(acc => {
+                            const cleanKey = acc.replace(/[^a-zA-Z0-9]/g, '');
+                            const el = document.getElementById(`bal-${cleanKey}`);
+                            const b = d.balances[acc] || 0;
+                            if (el) el.textContent = formatINR(b);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn("Could not sync metrics:", err);
+            }
+        }
+    </script>
 </body>
 </html>
