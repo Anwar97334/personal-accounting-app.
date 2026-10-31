@@ -293,6 +293,15 @@
             font-size: 12px;
         }
 
+        .badge-info {
+            background: #E0E7FF;
+            color: #3730A3;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -339,16 +348,24 @@
         }
 
         .report-table th, .report-table td {
-            padding: 12px 16px;
+            padding: 12px 14px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        .report-table th {
-            background: #F1F5F9;
-            font-weight: 600;
-            color: var(--text-dark);
+        /* EXACT IMAGE HEADER STYLING */
+        .party-table-header th {
+            background-color: #FFFF00 !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            border: 1px solid #000000;
+            text-align: center;
+        }
+
+        .party-table td {
+            border: 1px solid #CBD5E1;
         }
 
         .modal-overlay {
@@ -445,7 +462,7 @@
                 </div>
             </div>
 
-            <!-- DASHBOARD SHOWCASE CARDS (POINT 3) -->
+            <!-- DASHBOARD SHOWCASE CARDS -->
             <div class="showcase-cards">
                 <div class="card card-gold">
                     <h3>Saving Fund Progress</h3>
@@ -523,29 +540,30 @@
             <div id="notification" class="hidden"></div>
         </section>
 
-        <!-- TAB 3: PARTY LEDGERS -->
+        <!-- TAB 3: PARTY LEDGERS (REDESIGNED MATCHING IMAGE) -->
         <section id="party-ledgers" class="tab-content">
             <header>
                 <div>
-                    <h1>Party & Project Ledgers (Double Entry)</h1>
-                    <p class="subtitle">Positive = Due to me (+) | Negative = Owed by me (-)</p>
+                    <h1>Party / Project Ledgers</h1>
+                    <p class="subtitle">Detailed Monthly Movement & Balances</p>
                 </div>
                 <button class="btn-refresh" onclick="loadPartyLedgers()">↻ Refresh Ledgers</button>
             </header>
 
             <div class="table-container">
-                <table class="report-table">
+                <table class="report-table party-table">
                     <thead>
-                        <tr>
-                            <th>Party / Project Name</th>
-                            <th>Total Given (Outflow)</th>
-                            <th>Total Taken (Inflow)</th>
-                            <th>Net Balance</th>
-                            <th>Status</th>
+                        <tr class="party-table-header">
+                            <th>PARTY / PROJECT</th>
+                            <th>OPENING BALANCE OF THE MONTH</th>
+                            <th>TOTAL INFLOW</th>
+                            <th>TOTAL OUT FLOW</th>
+                            <th>CLOSING BALANCE TILL NOW</th>
+                            <th>STATUS</th>
                         </tr>
                     </thead>
                     <tbody id="party-table-body">
-                        <tr><td colspan="5" style="text-align: center;">Click "Refresh Ledgers" to view records.</td></tr>
+                        <tr><td colspan="6" style="text-align: center;">Click "Refresh Ledgers" to load records.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -583,7 +601,7 @@
             <div id="history-loader" class="hidden">Loading transactions...</div>
         </section>
 
-        <!-- TAB 5: OPENING BALANCES SETUP (POINT 2) -->
+        <!-- TAB 5: OPENING BALANCES SETUP -->
         <section id="opening-balances" class="tab-content">
             <header>
                 <div>
@@ -705,15 +723,21 @@
 
         const TRANSFER_TYPES = ["Cash to Cash", "Cash to Bank", "Bank to Bank", "Bank to Cash"];
 
-        // 8 SAVING FUNDS (POINT 1 & 2)
         const SAVING_FUNDS = [
             "Bolero Car", "Bonku’s Education", "Dream House", "Survival Fund",
             "Thunderbird Bike", "Urgent Medical Fund", "Yearly Travelling Fund", "General Savings"
         ];
 
-        let indirectCategories = [
+        // STRICT INDIRECT INFLOW & OUTFLOW CATEGORY DEFINITIONS
+        const BASE_INFLOW_CATEGORIES = [
+            "Plots & Land", "Project Road", "Rayati Royalty", "Security Guard"
+        ];
+
+        const BASE_OUTFLOW_CATEGORIES = [
             "Plots & Land", "Project Road", "Rayati Royalty", "Security Guard", "Share of God"
         ];
+
+        let customAddedCategories = [];
 
         let directExpenditureCategories = [
             "Groceries",
@@ -789,7 +813,6 @@
             `).join('');
         }
 
-        // POINT 2: Opening balance inputs for 9 Accounts, 8 Saving Funds, and Special Ledgers
         function renderOpeningBalanceInputs() {
             const container = document.getElementById('ob-inputs-container');
             const savingsContainer = document.getElementById('ob-savings-container');
@@ -810,7 +833,8 @@
                 </div>
             `).join('');
 
-            specialContainer.innerHTML = indirectCategories.map(cat => `
+            const allSpecial = [...BASE_OUTFLOW_CATEGORIES, ...customAddedCategories];
+            specialContainer.innerHTML = allSpecial.map(cat => `
                 <div class="form-group">
                     <label>${cat} Opening Balance (₹)</label>
                     <input type="number" step="0.01" class="ob-amount-input" data-account="${cat}" placeholder="0.00" value="0">
@@ -852,9 +876,6 @@
             const transferTypeOpts = TRANSFER_TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
             const savingFundOpts = SAVING_FUNDS.map(f => `<option value="${f}">${f}</option>`).join('');
 
-            const catOptions = indirectCategories.map(c => `<option value="${c}">${c}</option>`).join('') + 
-                               `<option value="Add New Category">+ Add New Category</option>`;
-
             if (type === "Direct Income") {
                 html = `
                     <div class="form-group">
@@ -881,11 +902,15 @@
                     </div>
                 `;
             } else if (type === "Indirect Inflow") {
+                // POINT 1: ONLY PLOTS & LAND, PROJECT ROAD, RAYATI ROYALTY, SECURITY GUARD + ADD NEW CATEGORY
+                const inflowList = [...BASE_INFLOW_CATEGORIES, ...customAddedCategories];
+                const inflowOpts = inflowList.map(c => `<option value="${c}">${c}</option>`).join('') +
+                                   `<option value="Add New Category">+ Add New Category</option>`;
                 html = `
                     <div class="form-group">
                         <label>Indirect Inflow Category *</label>
                         <select id="tx-category" onchange="handleCategorySelectChange(this, 'inflow-custom-wrapper')">
-                            ${catOptions}
+                            ${inflowOpts}
                         </select>
                     </div>
                     <div class="form-group hidden" id="inflow-custom-wrapper">
@@ -917,11 +942,15 @@
                     </div>
                 `;
             } else if (type === "Indirect Outflow") {
+                // POINT 2: ONLY PLOTS & LAND, PROJECT ROAD, RAYATI ROYALTY, SECURITY GUARD, SHARE OF GOD + ADD NEW CATEGORY
+                const outflowList = [...BASE_OUTFLOW_CATEGORIES, ...customAddedCategories];
+                const outflowOpts = outflowList.map(c => `<option value="${c}">${c}</option>`).join('') +
+                                    `<option value="Add New Category">+ Add New Category</option>`;
                 html = `
                     <div class="form-group">
                         <label>Indirect Outflow Category *</label>
                         <select id="tx-category" onchange="handleCategorySelectChange(this, 'outflow-custom-wrapper')">
-                            ${catOptions}
+                            ${outflowOpts}
                         </select>
                     </div>
                     <div class="form-group hidden" id="outflow-custom-wrapper">
@@ -934,7 +963,6 @@
                     </div>
                 `;
             } else if (type === "Savings Funds") {
-                // POINT 1: Saving Fund treated as Transfer Fund
                 html = `
                     <div class="form-group">
                         <label>Transferring To *</label>
@@ -1004,9 +1032,11 @@
                     if (!directExpenditureCategories.includes(customCategory)) {
                         directExpenditureCategories.push(customCategory);
                     }
-                } else if (!indirectCategories.includes(customCategory)) {
-                    indirectCategories.push(customCategory);
-                    renderOpeningBalanceInputs();
+                } else {
+                    if (!customAddedCategories.includes(customCategory)) {
+                        customAddedCategories.push(customCategory);
+                        renderOpeningBalanceInputs();
+                    }
                 }
             }
 
@@ -1071,10 +1101,13 @@
             }
         }
 
+        // POINT 3: EXACT TABLE MATCHING IMAGE
         async function loadPartyLedgers() {
             if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
             const tbody = document.getElementById('party-table-body');
             const loader = document.getElementById('party-loader');
+            const month = document.getElementById('dash-month').value;
+            const year = document.getElementById('dash-year').value;
 
             loader.classList.remove('hidden');
 
@@ -1082,48 +1115,45 @@
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: "getPartyLedgers" })
+                    body: JSON.stringify({ action: "getPartyLedgers", month: month, year: year })
                 });
 
                 const res = await response.json();
                 if (res.status === "success") {
                     const parties = res.data;
                     
-                    parties.forEach(p => {
-                        if (p.name && !indirectCategories.includes(p.name)) {
-                            indirectCategories.push(p.name);
-                        }
-                    });
-
                     if (parties.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No party ledger entries found.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No party ledger entries found.</td></tr>`;
                     } else {
                         tbody.innerHTML = parties.map(p => {
-                            let badge = '';
-                            let balDisplay = formatINR(Math.abs(p.balance));
-
-                            if (p.balance > 0) {
-                                badge = `<span class="badge-receive">Due to me (+)</span>`;
-                            } else if (p.balance < 0) {
-                                badge = `<span class="badge-pay">Owed by me (-)</span>`;
+                            let statusBadge = '';
+                            if (p.status === "DUE TO ME (+)") {
+                                statusBadge = `<span class="badge-receive">DUE TO ME (+)</span>`;
+                            } else if (p.status === "OWED BY ME (-)") {
+                                statusBadge = `<span class="badge-pay">OWED BY ME (-)</span>`;
+                            } else if (p.status === "SAVING FUND") {
+                                statusBadge = `<span class="badge-info">SAVING FUND</span>`;
+                            } else if (p.status === "RESERVE") {
+                                statusBadge = `<span class="badge-receive">RESERVE</span>`;
                             } else {
-                                badge = `<span style="color:#64748B; font-weight:600;">Settled (₹0.00)</span>`;
+                                statusBadge = `<span style="color:#64748B; font-weight:700;">${p.status}</span>`;
                             }
 
                             return `
                                 <tr>
-                                    <td><strong>${p.name}</strong></td>
-                                    <td>${formatINR(p.totalGiven)}</td>
-                                    <td>${formatINR(p.totalTaken)}</td>
-                                    <td><strong>${p.balance < 0 ? '-' : (p.balance > 0 ? '+' : '')} ${balDisplay}</strong></td>
-                                    <td>${badge}</td>
+                                    <td style="font-weight:700;">${p.displayName}</td>
+                                    <td>${formatINR(p.opening)}</td>
+                                    <td>${formatINR(p.inflow)}</td>
+                                    <td>${formatINR(p.outflow)}</td>
+                                    <td style="font-weight:700;">${formatINR(p.closing)}</td>
+                                    <td style="text-align:center;">${statusBadge}</td>
                                 </tr>
                             `;
                         }).join('');
                     }
                 }
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Failed to load ledgers: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Failed to load ledgers: ${err.message}</td></tr>`;
             } finally {
                 loader.classList.add('hidden');
             }
@@ -1226,13 +1256,13 @@
             const transferTypeOpts = TRANSFER_TYPES.map(t => `<option value="${t}" ${t === tx.transferType ? 'selected' : ''}>${t}</option>`).join('');
             const savingFundOpts = SAVING_FUNDS.map(f => `<option value="${f}" ${f === tx.savingsFundName ? 'selected' : ''}>${f}</option>`).join('');
 
-            const catOptions = indirectCategories.map(c => `<option value="${c}" ${c === tx.category ? 'selected' : ''}>${c}</option>`).join('') +
-                               `<option value="Add New Category">+ Add New Category</option>`;
-
-            if (type === "Indirect Inflow" || type === "Indirect Outflow") {
+            if (type === "Indirect Inflow") {
+                const list = [...BASE_INFLOW_CATEGORIES, ...customAddedCategories];
+                const catOptions = list.map(c => `<option value="${c}" ${c === tx.category ? 'selected' : ''}>${c}</option>`).join('') +
+                                   `<option value="Add New Category">+ Add New Category</option>`;
                 html = `
                     <div class="form-group">
-                        <label>${type} Category *</label>
+                        <label>Indirect Inflow Category *</label>
                         <select id="edit-tx-category" onchange="handleCategorySelectChange(this, 'edit-custom-wrapper')">
                             ${catOptions}
                         </select>
@@ -1243,6 +1273,26 @@
                     </div>
                     <div class="form-group">
                         <label>Account *</label>
+                        <select id="edit-tx-account">${accountOpts}</select>
+                    </div>
+                `;
+            } else if (type === "Indirect Outflow") {
+                const list = [...BASE_OUTFLOW_CATEGORIES, ...customAddedCategories];
+                const catOptions = list.map(c => `<option value="${c}" ${c === tx.category ? 'selected' : ''}>${c}</option>`).join('') +
+                                   `<option value="Add New Category">+ Add New Category</option>`;
+                html = `
+                    <div class="form-group">
+                        <label>Indirect Outflow Category *</label>
+                        <select id="edit-tx-category" onchange="handleCategorySelectChange(this, 'edit-custom-wrapper')">
+                            ${catOptions}
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="edit-custom-wrapper">
+                        <label>New Category Name *</label>
+                        <input type="text" id="edit-tx-custom" placeholder="Type new category name">
+                    </div>
+                    <div class="form-group">
+                        <label>Account Deducted *</label>
                         <select id="edit-tx-account">${accountOpts}</select>
                     </div>
                 `;
@@ -1266,7 +1316,6 @@
                     </div>
                 `;
             } else if (type === "Savings Funds") {
-                // POINT 1: Saving Fund Edit Fields
                 const destOpts = ACCOUNTS.map(a => `<option value="${a}" ${a === tx.destAccount ? 'selected' : ''}>${a}</option>`).join('');
                 html = `
                     <div class="form-group">
@@ -1348,8 +1397,8 @@
                     category = custom;
                     if (txType === "Direct Expenditure") {
                         if (!directExpenditureCategories.includes(custom)) directExpenditureCategories.push(custom);
-                    } else if (!indirectCategories.includes(custom)) {
-                        indirectCategories.push(custom);
+                    } else {
+                        if (!customAddedCategories.includes(custom)) customAddedCategories.push(custom);
                     }
                 }
             } else if (document.getElementById('edit-tx-category-text')) {
@@ -1436,7 +1485,6 @@
             }
         }
 
-        // POINT 2: Save opening balances for 9 Accounts, 8 Saving Funds, Special Ledgers, and Custom
         async function submitOpeningBalances() {
             const btn = document.getElementById('ob-save-btn');
             const loader = document.getElementById('ob-loader');
@@ -1454,8 +1502,8 @@
             const customVal = parseFloat(document.getElementById('ob-custom-val').value) || 0;
             if (customName) {
                 balances[customName] = customVal;
-                if (!indirectCategories.includes(customName)) {
-                    indirectCategories.push(customName);
+                if (!customAddedCategories.includes(customName)) {
+                    customAddedCategories.push(customName);
                     renderOpeningBalanceInputs();
                 }
             }
@@ -1501,7 +1549,6 @@
             }
         }
 
-        // POINT 3: DASHBOARD SHOWCASE METRICS
         async function fetchDashboardMetrics() {
             if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
 
@@ -1534,7 +1581,6 @@
                     const net = d.totalIncome - d.totalExpense;
                     document.getElementById('dash-net-flow').textContent = formatINR(net);
 
-                    // POINT 3a: Saving Fund Progress (Completed vs Remaining)
                     const targetSavings = d.totalSavingsTarget || 0;
                     const completedSavings = d.totalSavingsCompleted || 0;
                     const remainingSavings = Math.max(0, targetSavings - completedSavings);
@@ -1542,16 +1588,14 @@
                     document.getElementById('dash-savings-target').textContent = formatINR(targetSavings);
                     document.getElementById('dash-savings-remaining').textContent = formatINR(remainingSavings);
 
-                    // POINT 3c: Accumulated God Reserve Balance
                     document.getElementById('dash-sog-balance').textContent = formatINR(d.accumulatedShareOfGod || 0);
 
-                    // POINT 3b: Indirect Ledgers Owed vs Due
                     if (d.partyLedgers) {
                         let totalDue = 0;
                         let totalOwed = 0;
                         d.partyLedgers.forEach(p => {
-                            if (p.balance > 0) totalDue += p.balance;
-                            else if (p.balance < 0) totalOwed += Math.abs(p.balance);
+                            if (p.status.includes("DUE")) totalDue += p.closing;
+                            else if (p.status.includes("OWED")) totalOwed += Math.abs(p.closing);
                         });
                         document.getElementById('dash-indirect-summary').textContent = `Due: ${formatINR(totalDue)} | Owed: ${formatINR(totalOwed)}`;
                     }
