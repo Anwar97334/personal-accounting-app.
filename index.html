@@ -18,6 +18,7 @@
             --danger: #EF4444;
             --success: #10B981;
             --primary-blue: #2563EB;
+            --purple: #7C3AED;
         }
 
         * {
@@ -35,16 +36,19 @@
         }
 
         .sidebar {
-            width: 250px;
+            width: 270px;
             background-color: var(--dark-green);
             color: var(--white);
             padding: 24px 0;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .sidebar .logo {
             padding: 0 24px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         .sidebar .logo h2 {
@@ -59,14 +63,34 @@
 
         .nav-links li {
             list-style: none;
-            padding: 14px 24px;
+            padding: 13px 24px;
             cursor: pointer;
             font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
         }
 
         .nav-links li:hover, .nav-links li.active {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.12);
             border-left: 4px solid var(--gold);
+        }
+
+        .nav-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.15);
+            margin: 12px 20px;
+        }
+
+        .nav-section-title {
+            padding: 6px 24px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94A3B8;
+            font-weight: 700;
         }
 
         .content {
@@ -88,6 +112,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
         header h1 {
@@ -100,11 +126,18 @@
             color: var(--text-muted);
         }
 
+        .period-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .period-selector select {
             padding: 8px 12px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             background: var(--white);
+            font-size: 14px;
         }
 
         .btn-refresh {
@@ -115,13 +148,25 @@
             cursor: pointer;
             font-weight: 600;
             color: var(--dark-green);
+            transition: background 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: #F1F5F9;
         }
 
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+        }
+
+        .showcase-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
         }
 
         .card {
@@ -131,6 +176,10 @@
             border-left: 5px solid var(--dark-green);
             box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
+
+        .card-gold { border-left-color: var(--gold); }
+        .card-blue { border-left-color: var(--primary-blue); }
+        .card-purple { border-left-color: var(--purple); }
 
         .card h3 {
             font-size: 13px;
@@ -144,22 +193,35 @@
             margin-bottom: 6px;
         }
 
-        .section-title {
-            margin: 28px 0 14px 0;
-            color: var(--dark-green);
-            font-size: 18px;
+        .section-header-title {
+            font-size: 16px;
             font-weight: 700;
+            color: var(--text-dark);
+            margin: 24px 0 14px 0;
         }
 
         .grid-balances {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-balances {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-balances {
+                grid-template-columns: 1fr;
+            }
         }
 
         .account-card {
             background: var(--white);
-            padding: 16px;
+            padding: 16px 18px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
@@ -167,56 +229,76 @@
         .account-card h4 {
             font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .account-card p {
             font-size: 18px;
             font-weight: 700;
-            color: var(--dark-green);
-        }
-
-        /* Double Entry Dashboard Boxes */
-        .grid-ledgers {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .ledger-box {
-            background: var(--white);
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .ledger-box h4 {
-            font-size: 14px;
             color: var(--text-dark);
-            margin-bottom: 8px;
-            font-weight: 600;
         }
 
-        .ledger-box .amount-line {
-            font-size: 18px;
+        /* EXACT IMAGE DOUBLE-ENTRY TABLE GRID */
+        .double-entry-frame {
+            border: 2px solid #000000;
+            background: var(--white);
+            margin-top: 10px;
+            margin-bottom: 36px;
+            overflow-x: auto;
+        }
+
+        .double-entry-header {
+            border-bottom: 2px solid #000000;
+            padding: 8px 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            color: #000000;
+            background: #FFFFFF;
+        }
+
+        .double-entry-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .double-entry-table td {
+            border: 1px solid #000000;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+            height: 54px;
+        }
+
+        .de-cat-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #000000;
+            display: block;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .de-cat-balance {
+            font-size: 14px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
 
         /* Positive Balance: + icon & Black Color */
-        .pos-balance {
-            color: #1E293B !important;
+        .de-pos {
+            color: #000000 !important;
         }
 
         /* Negative Balance: - icon & Red Color */
-        .neg-balance {
+        .de-neg {
             color: #EF4444 !important;
         }
 
@@ -224,7 +306,7 @@
             background: var(--white);
             padding: 28px;
             border-radius: 8px;
-            max-width: 580px;
+            max-width: 650px;
             border: 1px solid var(--border-color);
         }
 
@@ -265,6 +347,11 @@
             cursor: pointer;
             font-weight: 600;
             width: 100%;
+            font-size: 15px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-green-hover);
         }
 
         .btn-secondary {
@@ -329,24 +416,35 @@
             font-size: 12px;
         }
 
+        .overspent {
+            color: var(--danger) !important;
+            font-weight: 700;
+        }
+
+        .underspent {
+            color: var(--success) !important;
+            font-weight: 700;
+        }
+
         .hidden {
             display: none !important;
         }
 
-        #loader, #ob-loader, #history-loader, #party-loader {
+        .loader-box {
             margin-top: 14px;
             padding: 12px;
             background: #FEF3C7;
             color: #92400E;
             border-radius: 6px;
-            max-width: 580px;
+            max-width: 650px;
+            font-weight: 500;
         }
 
-        #notification, #ob-notification {
+        .notif-box {
             padding: 14px;
             border-radius: 6px;
             margin-top: 14px;
-            max-width: 580px;
+            max-width: 650px;
             font-weight: 600;
         }
 
@@ -367,6 +465,7 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
             overflow-x: auto;
+            margin-bottom: 28px;
         }
 
         .report-table {
@@ -385,6 +484,47 @@
             background: #F1F5F9;
             font-weight: 600;
             color: var(--text-dark);
+        }
+
+        .report-table tr.total-row {
+            background-color: #F8FAFC;
+            font-weight: 700;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .budget-grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .budget-item {
+            background: #F8FAFC;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .budget-item label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .budget-item input {
+            padding: 8px 10px;
+        }
+
+        .section-header {
+            margin: 28px 0 14px 0;
+            color: var(--dark-green);
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .modal-overlay {
@@ -419,17 +559,26 @@
 </head>
 <body>
     <nav class="sidebar">
-        <div class="logo">
-            <h2>Ledger Pro</h2>
-            <span>Personal Accounting</span>
+        <div>
+            <div class="logo">
+                <h2>Ledger Pro</h2>
+                <span>Personal Accounting</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" onclick="switchTab('dashboard')"><span>📊</span> Dashboard</li>
+                <li onclick="switchTab('transaction-entry')"><span>➕</span> Add Transaction</li>
+                <li onclick="switchTab('party-ledgers')"><span>👥</span> Party Ledgers</li>
+                <li onclick="switchTab('transaction-history')"><span>📑</span> Transaction History</li>
+                <li onclick="switchTab('opening-balances')"><span>⚙️</span> Opening Balances</li>
+
+                <div class="nav-divider"></div>
+                <div class="nav-section-title">Budget & Summaries</div>
+
+                <li onclick="switchTab('budget-management')"><span>🎯</span> Add Direct Expenditure Budget</li>
+                <li onclick="switchTab('month-summaries')"><span>📅</span> Current Month Expenditure Summaries</li>
+                <li onclick="switchTab('year-summaries')"><span>📈</span> Current Year Expenditure Summaries</li>
+            </ul>
         </div>
-        <ul class="nav-links">
-            <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
-            <li onclick="switchTab('transaction-entry')">Add Transaction</li>
-            <li onclick="switchTab('party-ledgers')">Party Ledgers</li>
-            <li onclick="switchTab('transaction-history')">Transaction History</li>
-            <li onclick="switchTab('opening-balances')">Opening Balances</li>
-        </ul>
     </nav>
 
     <main class="content">
@@ -438,7 +587,7 @@
             <header>
                 <div>
                     <h1>Financial Dashboard</h1>
-                    <p class="subtitle">Live Cash Flow & Account Balances</p>
+                    <p class="subtitle">Live Cash Flow, Direct Expenditure Budget & Balances</p>
                 </div>
                 <div class="period-selector">
                     <select id="dash-month" onchange="fetchDashboardMetrics()">
@@ -451,8 +600,8 @@
                         <option value="July">July</option>
                         <option value="August">August</option>
                         <option value="September">September</option>
-                        <option value="October">October</option>
-                        <option value="November" selected>November</option>
+                        <option value="October" selected>October</option>
+                        <option value="November">November</option>
                         <option value="December">December</option>
                     </select>
                     <select id="dash-year" onchange="fetchDashboardMetrics()">
@@ -464,6 +613,7 @@
                 </div>
             </header>
 
+            <!-- ROW 1 CARDS AS IN IMAGE -->
             <div class="summary-cards">
                 <div class="card income">
                     <h3>Total Income</h3>
@@ -476,19 +626,44 @@
                     <small>Direct: <span id="dash-direct-expense">₹0.00</span> | Indirect: <span id="dash-indirect-expense">₹0.00</span></small>
                 </div>
                 <div class="card balance">
-                    <h3>Net Cash Flow</h3>
-                    <h2 id="dash-net-flow">₹0.00</h2>
+                    <h3>Net Balance in Hand</h3>
+                    <h2 id="dash-net-balance-hand">₹ 0</h2>
+                    <small>sum of 9 master account</small>
                 </div>
             </div>
 
-            <!-- Double-Entry Indirect Inflow & Outflow Ledgers -->
-            <h3 class="section-title">Indirect Inflow & Outflow Double Entry Ledgers</h3>
-            <div class="grid-ledgers" id="dashboard-ledgers-grid">
-                <!-- Populated dynamically with exact positive (+) black and negative (-) red logic -->
+            <!-- ROW 2 CARDS AS IN IMAGE -->
+            <div class="showcase-cards">
+                <div class="card card-purple">
+                    <h3>Monthly Direct Exp. Budget</h3>
+                    <h2 id="dash-budget-total">₹0.00</h2>
+                    <small>Actual Exp: <span id="dash-budget-actual">₹0.00</span> | Remaining: <span id="dash-budget-remaining">₹0.00</span></small>
+                </div>
+                <div class="card card-gold">
+                    <h3>Saving Fund Progress</h3>
+                    <h2 id="dash-savings-completed">₹0.00</h2>
+                    <small>Target: ₹84,00,000.00 | Remaining: <span id="dash-savings-remaining">₹84,00,000.00</span></small>
+                </div>
+                <div class="card card-blue">
+                    <h3>Share of God Reserve</h3>
+                    <h2 id="dash-sog-balance">₹0.00</h2>
+                    <small>Accumulated God Reserve Balance</small>
+                </div>
             </div>
 
-            <h3 class="section-title">Current Account Balances (9 Master Accounts)</h3>
+            <!-- SECTION 3: 9 MASTER ACCOUNTS BALANCES AS IN IMAGE -->
+            <div class="section-header-title">Current Account Balances (9 Master Accounts)</div>
             <div class="grid-balances" id="balance-grid"></div>
+
+            <!-- SECTION 4: EXACT IMAGE DOUBLE-ENTRY TABLE -->
+            <div class="double-entry-frame">
+                <div class="double-entry-header">
+                    INDIRECT INFLOW &amp; INDIRECT OUTFLOW DOUBLE ENTRY LEDGER BALANCE
+                </div>
+                <table class="double-entry-table" id="dashboard-de-table">
+                    <!-- Populated dynamically: 5 boxes per row, positive = + black, negative = - red -->
+                </table>
+            </div>
         </section>
 
         <!-- TAB 2: ADD TRANSACTION -->
@@ -540,8 +715,8 @@
                 </div>
             </div>
             
-            <div id="loader" class="hidden">Saving to Google Sheets... Please wait.</div>
-            <div id="notification" class="hidden"></div>
+            <div id="loader" class="loader-box hidden">Saving to Google Sheets... Please wait.</div>
+            <div id="notification" class="notif-box hidden"></div>
         </section>
 
         <!-- TAB 3: PARTY LEDGERS -->
@@ -549,7 +724,7 @@
             <header>
                 <div>
                     <h1>Party & Project Ledgers</h1>
-                    <p class="subtitle">Double-entry status: Positive = Due to me (+) | Negative = Owed by me (-)</p>
+                    <p class="subtitle">Positive = Due to me (+) | Negative = Owed by me (-)</p>
                 </div>
                 <button class="btn-refresh" onclick="loadPartyLedgers()">↻ Refresh Ledgers</button>
             </header>
@@ -570,7 +745,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="party-loader" class="hidden">Loading party ledgers...</div>
+            <div id="party-loader" class="loader-box hidden">Loading party ledgers...</div>
         </section>
 
         <!-- TAB 4: TRANSACTION HISTORY -->
@@ -601,7 +776,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="history-loader" class="hidden">Loading transactions...</div>
+            <div id="history-loader" class="loader-box hidden">Loading transactions...</div>
         </section>
 
         <!-- TAB 5: OPENING BALANCES SETUP -->
@@ -609,7 +784,7 @@
             <header>
                 <div>
                     <h1>Initial Opening Balances</h1>
-                    <p class="subtitle">9 Master Accounts & Ledgers</p>
+                    <p class="subtitle">9 Accounts & Special Indirect Ledgers</p>
                 </div>
             </header>
 
@@ -635,8 +810,8 @@
                         <option value="July">July</option>
                         <option value="August">August</option>
                         <option value="September">September</option>
-                        <option value="October">October</option>
-                        <option value="November" selected>November</option>
+                        <option value="October" selected>October</option>
+                        <option value="November">November</option>
                         <option value="December">December</option>
                     </select>
                 </div>
@@ -658,8 +833,257 @@
                 </button>
             </div>
             
-            <div id="ob-loader" class="hidden">Saving opening balances... Please wait.</div>
-            <div id="ob-notification" class="hidden"></div>
+            <div id="ob-loader" class="loader-box hidden">Saving opening balances... Please wait.</div>
+            <div id="ob-notification" class="notif-box hidden"></div>
+        </section>
+
+        <!-- TAB 6: ADD DIRECT EXPENDITURE BUDGET -->
+        <section id="budget-management" class="tab-content">
+            <header>
+                <div>
+                    <h1>Add Direct Expenditure Budget</h1>
+                    <p class="subtitle">Set, edit, and update monthly category limits</p>
+                </div>
+                <div class="period-selector">
+                    <select id="budget-month" onchange="fetchCategoryBudgets()">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October" selected>October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                    <select id="budget-year" onchange="fetchCategoryBudgets()">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                    <button class="btn-refresh" onclick="fetchCategoryBudgets()">↻ Load Budget</button>
+                </div>
+            </header>
+
+            <div class="card card-purple" style="margin-bottom: 24px; max-width: 650px;">
+                <h3>Total Monthly Direct Expenditure Budget</h3>
+                <h2 id="budget-live-total">₹0.00</h2>
+                <small>Calculated automatically from all category fields below</small>
+            </div>
+
+            <div class="form-container" style="max-width: 100%;">
+                <div class="budget-grid-inputs" id="budget-inputs-container"></div>
+
+                <button type="button" class="btn-primary" onclick="saveMonthlyBudgets()" id="budget-save-btn" style="margin-top: 24px;">
+                    Save & Update Monthly Budget
+                </button>
+            </div>
+
+            <div id="budget-loader" class="loader-box hidden">Processing budget records... Please wait.</div>
+            <div id="budget-notification" class="notif-box hidden"></div>
+        </section>
+
+        <!-- TAB 7: CURRENT MONTH EXPENDITURE SUMMARIES -->
+        <section id="month-summaries" class="tab-content">
+            <header>
+                <div>
+                    <h1>Current Month Expenditure Summaries</h1>
+                    <p class="subtitle">Direct Expenditure tracking against Budget & Ledger Balances</p>
+                </div>
+                <div class="period-selector">
+                    <select id="msum-month" onchange="loadMonthExpenditureSummary()">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October" selected>October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                    <select id="msum-year" onchange="loadMonthExpenditureSummary()">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                    <button class="btn-refresh" onclick="loadMonthExpenditureSummary()">↻ Refresh Summary</button>
+                </div>
+            </header>
+
+            <div class="section-header">
+                <h3>A. Direct Expenditure Summary</h3>
+            </div>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Monthly Budget</th>
+                            <th>Actual Expenses</th>
+                            <th>Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="msum-direct-table-body">
+                        <tr><td colspan="4" style="text-align: center;">Click Refresh to load data.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-header">
+                <h3>B. Ledger Balance Summary</h3>
+            </div>
+
+            <h4 style="margin: 16px 0 8px 0; color: #991B1B;">1. Owed by Me (Payable / Liabilities)</h4>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Name / Ledger</th>
+                            <th>Total Amount</th>
+                            <th>Payments Made</th>
+                            <th>Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="msum-owed-table-body">
+                        <tr><td colspan="4" style="text-align: center;">No outstanding liabilities.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 20px 0 8px 0; color: #166534;">2. Due to Me (Receivable / Money Owned by Me)</h4>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Name / Ledger</th>
+                            <th>Total Amount</th>
+                            <th>Amount Received</th>
+                            <th>Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="msum-due-table-body">
+                        <tr><td colspan="4" style="text-align: center;">No outstanding receivables.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="msum-loader" class="loader-box hidden">Loading monthly summaries...</div>
+        </section>
+
+        <!-- TAB 8: CURRENT YEAR EXPENDITURE SUMMARIES -->
+        <section id="year-summaries" class="tab-content">
+            <header>
+                <div>
+                    <h1>Current Year Expenditure Summaries</h1>
+                    <p class="subtitle">Cumulative annual totals across all months and ledger accounts</p>
+                </div>
+                <div class="period-selector">
+                    <select id="ysum-year" onchange="loadYearExpenditureSummary()">
+                        <option value="2025">2025</option>
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                    </select>
+                    <button class="btn-refresh" onclick="loadYearExpenditureSummary()">↻ Refresh Annual Summary</button>
+                </div>
+            </header>
+
+            <div class="section-header">
+                <h3>A. Yearly Direct Expenditure Summary (All Months)</h3>
+            </div>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Total Budget</th>
+                            <th>Actual Expenses</th>
+                            <th>Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ysum-monthly-table-body">
+                        <tr><td colspan="4" style="text-align: center;">Click Refresh to load data.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-header">
+                <h3>B. Yearly Category-Wise Summary</h3>
+            </div>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Direct Expenditure Category</th>
+                            <th>Annual Budget</th>
+                            <th>Annual Actual Expenses</th>
+                            <th>Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ysum-category-table-body">
+                        <tr><td colspan="4" style="text-align: center;">Click Refresh to load data.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-header">
+                <h3>C. Yearly Ledger Summary</h3>
+            </div>
+            <div class="summary-cards" style="margin-bottom: 20px;">
+                <div class="card" style="border-left-color: #991B1B;">
+                    <h3>Total Outstanding Liabilities (Owed by Me)</h3>
+                    <h2 id="ysum-total-liabilities" style="color: #991B1B;">₹0.00</h2>
+                    <small>Payments Made in Year: <span id="ysum-payments-year">₹0.00</span></small>
+                </div>
+                <div class="card" style="border-left-color: #166534;">
+                    <h3>Total Outstanding Receivables (Due to Me)</h3>
+                    <h2 id="ysum-total-receivables" style="color: #166534;">₹0.00</h2>
+                    <small>Received Back in Year: <span id="ysum-received-year">₹0.00</span></small>
+                </div>
+            </div>
+
+            <h4 style="margin: 16px 0 8px 0; color: #991B1B;">All Owed by Me Accounts</h4>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Name / Ledger</th>
+                            <th>Total Taken</th>
+                            <th>Payments Made (This Year)</th>
+                            <th>Current Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ysum-owed-table-body">
+                        <tr><td colspan="4" style="text-align: center;">No liabilities.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 20px 0 8px 0; color: #166534;">All Due to Me Accounts</h4>
+            <div class="table-container">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Name / Ledger</th>
+                            <th>Total Given</th>
+                            <th>Amount Received (This Year)</th>
+                            <th>Current Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ysum-due-table-body">
+                        <tr><td colspan="4" style="text-align: center;">No receivables.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="ysum-loader" class="loader-box hidden">Loading annual summaries...</div>
         </section>
     </main>
 
@@ -711,7 +1135,7 @@
 
     <!-- JAVASCRIPT APPLICATION CODE -->
     <script>
-        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL (ending in /exec)
+        // REPLACE THIS WITH YOUR DEPLOYED GOOGLE APPS SCRIPT URL (ending in /exec)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXtucWSlm4kBxpCLN3xefz0MYM-EuccvdaRas8d2mqqNd-Q5hCPJh3H5rjdpqp4QNB/exec';
 
         const ACCOUNTS = [
@@ -721,33 +1145,32 @@
 
         const TRANSFER_TYPES = ["Cash to Cash", "Cash to Bank", "Bank to Bank", "Bank to Cash"];
 
-        // 1. Direct Income Categories (Default + Dynamic Custom additions)
+        // Direct Income Categories
         let directIncomeCategories = [
             "JIO TOWER", "PLOTS & LAND", "PROJECT ROAD", "RAYATI ROYALTY", "SECURITY GUARD", "OTHERS"
         ];
 
-        // 2. Exact requested Indirect Inflow Categories
+        // Exact Indirect Categories
         let indirectInflowCategories = [
-            "Plots & Land", "Project Road", "Rayati Royalty", "Security Guard", 
-            "Raja", "Sasurali", "Mousami", "Hanse", "Birsai", "Anju", "Sapna", "Atul", "Home Land", 
+            "PLOTS & LAND", "PROJECT ROAD", "RAYATI ROYALTY", "SECURITY GUARD", 
+            "RAJA", "SASURALI", "MOUSAMI", "HANSE", "BIRSAI", "ANJU", "SAPNA", "ATUL", "HOME LAND", 
             "+ Add New Category"
         ];
 
-        // 3. Exact requested Indirect Outflow Categories
         let indirectOutflowCategories = [
-            "Plots & Land", "Project Road", "Rayati Royalty", "Security Guard", 
-            "Raja", "Sasurali", "Mousami", "Hanse", "Birsai", "Anju", "Sapna", "Atul", "Home Land", 
+            "PLOTS & LAND", "PROJECT ROAD", "RAYATI ROYALTY", "SECURITY GUARD", 
+            "RAJA", "SASURALI", "MOUSAMI", "HANSE", "BIRSAI", "ANJU", "SAPNA", "ATUL", "HOME LAND", 
             "Share of God", 
             "+ Add New Category"
         ];
 
-        // 4. Exact requested Savings Funds
+        // Exact Savings Funds
         const SAVINGS_FUNDS_LIST = [
             "Bolero Car", "Bonku’s Education", "Dream House", "Survival Fund", 
             "Thunderbird Bike", "Urgent Medical Fund", "Yearly Travelling Fund", "General Savings"
         ];
 
-        // Existing Direct Expenditure Categories
+        // Direct Expenditure Categories
         let directExpenditureCategories = [
             "Groceries", "Home other Utilities", "Bills for Milk Gas & Electric",
             "Bills for Mobile & Laptop & Tv", "Family", "Bonku’s Education",
@@ -756,6 +1179,7 @@
             "Outing & Food", "Suspense", "Account Adjustment", "Unusual Exp", "Beverage Exp"
         ];
 
+        const TOTAL_SAVINGS_TARGET = 8400000;
         let cachedTransactions = [];
         let cachedPartyLedgers = [];
 
@@ -766,6 +1190,7 @@
 
             renderAccountGrid();
             renderOpeningBalanceInputs();
+            renderBudgetInputs();
 
             if (SCRIPT_URL && !SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) {
                 fetchDashboardMetrics();
@@ -787,6 +1212,12 @@
                 loadTransactionHistory();
             } else if (tabId === 'party-ledgers') {
                 loadPartyLedgers();
+            } else if (tabId === 'budget-management') {
+                fetchCategoryBudgets();
+            } else if (tabId === 'month-summaries') {
+                loadMonthExpenditureSummary();
+            } else if (tabId === 'year-summaries') {
+                loadYearExpenditureSummary();
             } else if (tabId === 'dashboard') {
                 fetchDashboardMetrics();
             }
@@ -823,7 +1254,6 @@
                 </div>
             `).join('');
 
-            // Filter out "+ Add New Category" for opening balance setups
             const combinedParties = Array.from(new Set([...indirectInflowCategories, ...indirectOutflowCategories]))
                                          .filter(c => c !== "+ Add New Category");
 
@@ -1005,18 +1435,17 @@
                 }
                 category = customCategory;
 
-                // Add to Direct Income category list if applicable
                 if (type === "Direct Income" && !directIncomeCategories.includes(customCategory)) {
                     directIncomeCategories.splice(directIncomeCategories.length - 1, 0, customCategory);
                 }
 
-                // Add to Indirect Inflow / Outflow category lists if applicable
                 if (type === "Indirect Inflow" || type === "Indirect Outflow") {
-                    if (!indirectInflowCategories.includes(customCategory)) {
-                        indirectInflowCategories.splice(indirectInflowCategories.length - 1, 0, customCategory);
+                    const upper = customCategory.toUpperCase();
+                    if (!indirectInflowCategories.includes(upper)) {
+                        indirectInflowCategories.splice(indirectInflowCategories.length - 1, 0, upper);
                     }
-                    if (!indirectOutflowCategories.includes(customCategory)) {
-                        indirectOutflowCategories.splice(indirectOutflowCategories.length - 1, 0, customCategory);
+                    if (!indirectOutflowCategories.includes(upper)) {
+                        indirectOutflowCategories.splice(indirectOutflowCategories.length - 1, 0, upper);
                     }
                     renderOpeningBalanceInputs();
                 }
@@ -1041,7 +1470,7 @@
                     amount: amount,
                     category: category,
                     customCategory: customCategory,
-                    accountType: "", // Removed as requested
+                    accountType: "",
                     accountName: document.getElementById('tx-account') ? document.getElementById('tx-account').value : "",
                     personName: category || savingsFund,
                     transferType: document.getElementById('tx-transfer-type') ? document.getElementById('tx-transfer-type').value : (type === "Savings Funds" ? "To Savings Fund" : ""),
@@ -1100,7 +1529,7 @@
                 if (res.status === "success") {
                     cachedPartyLedgers = res.data;
                     renderPartyLedgerTable(cachedPartyLedgers);
-                    renderDashboardLedgerBoxes(cachedPartyLedgers);
+                    renderDashboardDoubleEntryTable(cachedPartyLedgers);
                 }
             } catch (err) {
                 if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Failed to load ledgers: ${err.message}</td></tr>`;
@@ -1142,27 +1571,63 @@
             }).join('');
         }
 
-        // Render Dashboard Boxes: Positive = + icon & black digit, Negative = - icon & red digit
-        function renderDashboardLedgerBoxes(parties) {
-            const grid = document.getElementById('dashboard-ledgers-grid');
-            if (!grid) return;
+        // RENDER DOUBLE ENTRY LEDGER TABLE EXACTLY MATCHING THE ATTACHED IMAGE (5 PER ROW)
+        function renderDashboardDoubleEntryTable(parties) {
+            const table = document.getElementById('dashboard-de-table');
+            if (!table) return;
 
-            grid.innerHTML = parties.map(p => {
-                const isPos = p.balance > 0;
-                const isNeg = p.balance < 0;
-                const sign = isPos ? '+' : (isNeg ? '-' : '');
-                const styleClass = isNeg ? 'neg-balance' : 'pos-balance';
-                const formattedVal = formatINR(Math.abs(p.balance));
+            // Base list of categories as positioned in the user's image
+            const imageOrder = [
+                "PLOTS & LAND", "PROJECT ROAD", "RAYATI ROYALTY", "SECURITY GUARD", "RAJA",
+                "HANSE", "BIRSAI", "ANJU", "SAPNA", "ATUL",
+                "SASURALI", "MOUSAMI", "HOME LAND"
+            ];
 
-                return `
-                    <div class="ledger-box">
-                        <h4>${p.name}</h4>
-                        <div class="amount-line ${styleClass}">
-                            <span>${sign} ${formattedVal}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            const partyMap = {};
+            parties.forEach(p => {
+                partyMap[p.name.toUpperCase()] = p;
+            });
+
+            // Gather all categories to show, preserving standard image order first then appending new categories
+            const displayedKeys = [...imageOrder];
+            parties.forEach(p => {
+                const uKey = p.name.toUpperCase();
+                if (!displayedKeys.includes(uKey) && uKey !== "SHARE OF GOD") {
+                    displayedKeys.push(uKey);
+                }
+            });
+
+            // Group into rows of 5 boxes
+            let tableHtml = '';
+            for (let i = 0; i < displayedKeys.length; i += 5) {
+                const chunk = displayedKeys.slice(i, i + 5);
+                tableHtml += '<tr>';
+                chunk.forEach(key => {
+                    const p = partyMap[key] || { name: key, balance: 0 };
+                    const isPos = p.balance > 0;
+                    const isNeg = p.balance < 0;
+                    const sign = isPos ? '+ ' : (isNeg ? '- ' : '');
+                    const colorClass = isNeg ? 'de-neg' : 'de-pos';
+                    const amountStr = p.balance === 0 ? '' : formatINR(Math.abs(p.balance)).replace('₹', '').trim();
+
+                    tableHtml += `
+                        <td>
+                            <span class="de-cat-title">${p.name}</span>
+                            <div class="de-cat-balance ${colorClass}">
+                                <span>₹ ${sign}${amountStr}</span>
+                            </div>
+                        </td>
+                    `;
+                });
+
+                // Pad empty cells if last row has less than 5
+                for (let empty = chunk.length; empty < 5; empty++) {
+                    tableHtml += '<td></td>';
+                }
+                tableHtml += '</tr>';
+            }
+
+            table.innerHTML = tableHtml;
         }
 
         async function fetchDashboardMetrics() {
@@ -1194,13 +1659,33 @@
                     document.getElementById('dash-direct-expense').textContent = formatINR(d.directExpense);
                     document.getElementById('dash-indirect-expense').textContent = formatINR(d.indirectOutflow);
 
-                    const net = d.totalIncome - d.totalExpense;
-                    document.getElementById('dash-net-flow').textContent = formatINR(net);
+                    // Net Balance in Hand (Sum of 9 master accounts)
+                    const netHand = d.netBalanceInHand !== undefined ? d.netBalanceInHand : 0;
+                    document.getElementById('dash-net-balance-hand').textContent = '₹ ' + new Intl.NumberFormat('en-IN').format(netHand);
 
-                    // Render ledger boxes from dashboard response
+                    // Budget Card
+                    document.getElementById('dash-budget-total').textContent = formatINR(d.monthlyBudgetTotal || 0);
+                    document.getElementById('dash-budget-actual').textContent = formatINR(d.directExpense || 0);
+                    const budgetRemEl = document.getElementById('dash-budget-remaining');
+                    if (budgetRemEl) {
+                        const rem = (d.monthlyBudgetTotal || 0) - (d.directExpense || 0);
+                        budgetRemEl.textContent = (rem < 0 ? '- ' : '') + formatINR(Math.abs(rem));
+                        budgetRemEl.className = rem < 0 ? 'overspent' : 'underspent';
+                    }
+
+                    // Savings Fund
+                    const completedSavings = d.totalSavingsCompleted || 0;
+                    document.getElementById('dash-savings-completed').textContent = formatINR(completedSavings);
+                    const remaining = Math.max(0, TOTAL_SAVINGS_TARGET - completedSavings);
+                    document.getElementById('dash-savings-remaining').textContent = formatINR(remaining);
+
+                    // Share of God
+                    document.getElementById('dash-sog-balance').textContent = formatINR(d.accumulatedShareOfGod || 0);
+
+                    // Render Double Entry Table
                     if (d.partyLedgers) {
                         cachedPartyLedgers = d.partyLedgers;
-                        renderDashboardLedgerBoxes(d.partyLedgers);
+                        renderDashboardDoubleEntryTable(d.partyLedgers);
                     }
 
                     // 9 Accounts Balances
@@ -1442,9 +1927,10 @@
                     if (txType === "Direct Income" && !directIncomeCategories.includes(custom)) {
                         directIncomeCategories.splice(directIncomeCategories.length - 1, 0, custom);
                     }
-                    if ((txType === "Indirect Inflow" || txType === "Indirect Outflow") && !indirectInflowCategories.includes(custom)) {
-                        indirectInflowCategories.splice(indirectInflowCategories.length - 1, 0, custom);
-                        indirectOutflowCategories.splice(indirectOutflowCategories.length - 1, 0, custom);
+                    if ((txType === "Indirect Inflow" || txType === "Indirect Outflow")) {
+                        const upper = custom.toUpperCase();
+                        if (!indirectInflowCategories.includes(upper)) indirectInflowCategories.splice(indirectInflowCategories.length - 1, 0, upper);
+                        if (!indirectOutflowCategories.includes(upper)) indirectOutflowCategories.splice(indirectOutflowCategories.length - 1, 0, upper);
                     }
                 }
             } else if (document.getElementById('edit-tx-category-text')) {
@@ -1463,4 +1949,439 @@
                 category: category,
                 personName: category || (document.getElementById('edit-tx-savings-fund') ? document.getElementById('edit-tx-savings-fund').value : ""),
                 description: document.getElementById('edit-tx-desc').value,
-                accountName: document.getElementById('edit-tx-account') ? document.getElementById('edit-tx-account').value : tx.accountName
+                accountName: document.getElementById('edit-tx-account') ? document.getElementById('edit-tx-account').value : tx.accountName,
+                transferType: document.getElementById('edit-tx-transfer-type') ? document.getElementById('edit-tx-transfer-type').value : (txType === "Savings Funds" ? "To Savings Fund" : tx.transferType),
+                sourceAccount: document.getElementById('edit-tx-source') ? document.getElementById('edit-tx-source').value : tx.sourceAccount,
+                destAccount: document.getElementById('edit-tx-dest') ? document.getElementById('edit-tx-dest').value : tx.destAccount,
+                savingsFundName: document.getElementById('edit-tx-savings-fund') ? document.getElementById('edit-tx-savings-fund').value : tx.savingsFundName
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "updateTransaction",
+                        data: updatedData
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    alert(res.message);
+                    closeEditModal();
+                    loadTransactionHistory();
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            } catch (err) {
+                alert("Update failed: " + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+            }
+        }
+
+        async function deleteRecord(transactionId) {
+            if (!confirm("Are you sure you want to delete this transaction? Balances will be recalculated.")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "deleteTransaction",
+                        transactionId: transactionId
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    alert(res.message);
+                    loadTransactionHistory();
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    alert("Error: " + res.message);
+                }
+            } catch (err) {
+                alert("Delete failed: " + err.message);
+            }
+        }
+
+        async function submitOpeningBalances() {
+            const btn = document.getElementById('ob-save-btn');
+            const loader = document.getElementById('ob-loader');
+            const notif = document.getElementById('ob-notification');
+            const year = document.getElementById('ob-year').value;
+            const month = document.getElementById('ob-month').value;
+
+            const balances = {};
+            document.querySelectorAll('.ob-amount-input').forEach(input => {
+                const acc = input.getAttribute('data-account');
+                balances[acc] = parseFloat(input.value) || 0;
+            });
+
+            const customName = document.getElementById('ob-custom-name').value.trim();
+            const customVal = parseFloat(document.getElementById('ob-custom-val').value) || 0;
+            if (customName) {
+                const uCustom = customName.toUpperCase();
+                balances[uCustom] = customVal;
+                if (!indirectInflowCategories.includes(uCustom)) {
+                    indirectInflowCategories.splice(indirectInflowCategories.length - 1, 0, uCustom);
+                    indirectOutflowCategories.splice(indirectOutflowCategories.length - 1, 0, uCustom);
+                    renderOpeningBalanceInputs();
+                }
+            }
+
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            notif.classList.add('hidden');
+
+            const payload = {
+                action: "saveOpeningBalances",
+                data: {
+                    year: year,
+                    month: month,
+                    balances: balances
+                }
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.status === "success") {
+                    notif.textContent = result.message;
+                    notif.className = 'notif-box notif-success';
+                    notif.classList.remove('hidden');
+                    fetchDashboardMetrics();
+                    loadPartyLedgers();
+                } else {
+                    throw new Error(result.message || "Failed to save opening balances.");
+                }
+            } catch (err) {
+                notif.textContent = "Error: " + err.message;
+                notif.className = 'notif-box notif-error';
+                notif.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+            }
+        }
+
+        // BUDGET MANAGEMENT FUNCTIONS
+        function renderBudgetInputs() {
+            const container = document.getElementById('budget-inputs-container');
+            if (!container) return;
+
+            container.innerHTML = directExpenditureCategories.map(cat => `
+                <div class="budget-item">
+                    <label>${cat}</label>
+                    <input type="number" step="0.01" min="0" placeholder="0.00" 
+                           class="cat-budget-input" data-category="${cat}" 
+                           value="0" oninput="updateLiveBudgetTotal()">
+                </div>
+            `).join('');
+        }
+
+        function updateLiveBudgetTotal() {
+            let total = 0;
+            document.querySelectorAll('.cat-budget-input').forEach(inp => {
+                total += parseFloat(inp.value) || 0;
+            });
+            const totalEl = document.getElementById('budget-live-total');
+            if (totalEl) totalEl.textContent = formatINR(total);
+        }
+
+        async function fetchCategoryBudgets() {
+            if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
+            const month = document.getElementById('budget-month').value;
+            const year = document.getElementById('budget-year').value;
+            const loader = document.getElementById('budget-loader');
+            const notif = document.getElementById('budget-notification');
+
+            loader.classList.remove('hidden');
+            notif.classList.add('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "getMonthlyBudgets",
+                        month: month,
+                        year: year
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    const budgets = res.data || {};
+                    document.querySelectorAll('.cat-budget-input').forEach(inp => {
+                        const cat = inp.getAttribute('data-category');
+                        inp.value = budgets[cat] !== undefined ? budgets[cat] : 0;
+                    });
+                    updateLiveBudgetTotal();
+                }
+            } catch (err) {
+                console.warn("Failed to fetch budgets:", err);
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        async function saveMonthlyBudgets() {
+            const btn = document.getElementById('budget-save-btn');
+            const loader = document.getElementById('budget-loader');
+            const notif = document.getElementById('budget-notification');
+            const month = document.getElementById('budget-month').value;
+            const year = document.getElementById('budget-year').value;
+
+            const budgets = {};
+            document.querySelectorAll('.cat-budget-input').forEach(inp => {
+                const cat = inp.getAttribute('data-category');
+                budgets[cat] = parseFloat(inp.value) || 0;
+            });
+
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            notif.classList.add('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "saveMonthlyBudgets",
+                        data: {
+                            month: month,
+                            year: year,
+                            budgets: budgets
+                        }
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    notif.textContent = res.message;
+                    notif.className = 'notif-box notif-success';
+                    notif.classList.remove('hidden');
+                    fetchDashboardMetrics();
+                } else {
+                    throw new Error(res.message || "Failed to save budget.");
+                }
+            } catch (err) {
+                notif.textContent = "Error: " + err.message;
+                notif.className = 'notif-box notif-error';
+                notif.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+            }
+        }
+
+        // MONTHLY EXPENDITURE SUMMARIES
+        async function loadMonthExpenditureSummary() {
+            if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
+            const month = document.getElementById('msum-month').value;
+            const year = document.getElementById('msum-year').value;
+            const loader = document.getElementById('msum-loader');
+            const dirTbody = document.getElementById('msum-direct-table-body');
+            const owedTbody = document.getElementById('msum-owed-table-body');
+            const dueTbody = document.getElementById('msum-due-table-body');
+
+            loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "getMonthExpenditureSummary",
+                        month: month,
+                        year: year
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    const data = res.data;
+
+                    let dirHtml = data.directSummary.map(row => {
+                        const isOver = row.remainingBalance < 0;
+                        const remClass = isOver ? 'overspent' : 'underspent';
+                        return `
+                            <tr>
+                                <td><strong>${row.category}</strong></td>
+                                <td>${formatINR(row.monthlyBudget)}</td>
+                                <td>${formatINR(row.actualExpenses)}</td>
+                                <td class="${remClass}">${formatINR(row.remainingBalance)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    const totalOver = data.totals.totalRemaining < 0;
+                    dirHtml += `
+                        <tr class="total-row">
+                            <td>Total</td>
+                            <td>${formatINR(data.totals.totalBudget)}</td>
+                            <td>${formatINR(data.totals.totalActual)}</td>
+                            <td class="${totalOver ? 'overspent' : 'underspent'}">${formatINR(data.totals.totalRemaining)}</td>
+                        </tr>
+                    `;
+                    dirTbody.innerHTML = dirHtml;
+
+                    if (data.owedByMe.length === 0) {
+                        owedTbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No liabilities owed for this period.</td></tr>`;
+                    } else {
+                        owedTbody.innerHTML = data.owedByMe.map(row => `
+                            <tr>
+                                <td><strong>${row.name}</strong></td>
+                                <td>${formatINR(row.totalAmount)}</td>
+                                <td>${formatINR(row.paymentsMade)}</td>
+                                <td class="overspent">${formatINR(row.remainingBalance)}</td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    if (data.dueToMe.length === 0) {
+                        dueTbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">No receivables due for this period.</td></tr>`;
+                    } else {
+                        dueTbody.innerHTML = data.dueToMe.map(row => `
+                            <tr>
+                                <td><strong>${row.name}</strong></td>
+                                <td>${formatINR(row.totalAmount)}</td>
+                                <td>${formatINR(row.amountReceived)}</td>
+                                <td class="underspent">${formatINR(row.remainingBalance)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (err) {
+                dirTbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align: center;">Error: ${err.message}</td></tr>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        // YEARLY EXPENDITURE SUMMARIES
+        async function loadYearExpenditureSummary() {
+            if (!SCRIPT_URL || SCRIPT_URL.includes('PASTE_YOUR_COPIED_URL_HERE')) return;
+            const year = document.getElementById('ysum-year').value;
+            const loader = document.getElementById('ysum-loader');
+            const monthTbody = document.getElementById('ysum-monthly-table-body');
+            const catTbody = document.getElementById('ysum-category-table-body');
+            const owedTbody = document.getElementById('ysum-owed-table-body');
+            const dueTbody = document.getElementById('ysum-due-table-body');
+
+            loader.classList.remove('hidden');
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: "getYearExpenditureSummary",
+                        year: year
+                    })
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    const data = res.data;
+
+                    let mHtml = data.monthlyBreakdown.map(m => {
+                        const isOver = m.remainingBalance < 0;
+                        return `
+                            <tr>
+                                <td><strong>${m.month}</strong></td>
+                                <td>${formatINR(m.totalBudget)}</td>
+                                <td>${formatINR(m.actualExpenses)}</td>
+                                <td class="${isOver ? 'overspent' : 'underspent'}">${formatINR(m.remainingBalance)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    const annTotalOver = data.annualTotal.remainingBalance < 0;
+                    mHtml += `
+                        <tr class="total-row">
+                            <td>Annual Total</td>
+                            <td>${formatINR(data.annualTotal.annualBudget)}</td>
+                            <td>${formatINR(data.annualTotal.annualActual)}</td>
+                            <td class="${annTotalOver ? 'overspent' : 'underspent'}">${formatINR(data.annualTotal.remainingBalance)}</td>
+                        </tr>
+                    `;
+                    monthTbody.innerHTML = mHtml;
+
+                    let catHtml = data.categoryWise.map(c => {
+                        const isOver = c.remainingBalance < 0;
+                        return `
+                            <tr>
+                                <td><strong>${c.category}</strong></td>
+                                <td>${formatINR(c.annualBudget)}</td>
+                                <td>${formatINR(c.annualActualExpenses)}</td>
+                                <td class="${isOver ? 'overspent' : 'underspent'}">${formatINR(c.remainingBalance)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    catHtml += `
+                        <tr class="total-row">
+                            <td>Annual Total</td>
+                            <td>${formatINR(data.annualTotal.annualBudget)}</td>
+                            <td>${formatINR(data.annualTotal.annualActual)}</td>
+                            <td class="${annTotalOver ? 'overspent' : 'underspent'}">${formatINR(data.annualTotal.remainingBalance)}</td>
+                        </tr>
+                    `;
+                    catTbody.innerHTML = catHtml;
+
+                    const ls = data.ledgerSummary;
+                    document.getElementById('ysum-total-liabilities').textContent = formatINR(ls.totalLiabilities);
+                    document.getElementById('ysum-payments-year').textContent = formatINR(ls.totalPaymentsMadeYear);
+                    document.getElementById('ysum-total-receivables').textContent = formatINR(ls.totalReceivables);
+                    document.getElementById('ysum-received-year').textContent = formatINR(ls.totalReceivedYear);
+
+                    if (ls.owedByMe.length === 0) {
+                        owedTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No liabilities.</td></tr>`;
+                    } else {
+                        owedTbody.innerHTML = ls.owedByMe.map(o => `
+                            <tr>
+                                <td><strong>${o.name}</strong></td>
+                                <td>${formatINR(o.totalAmount)}</td>
+                                <td>${formatINR(o.paymentsMadeInYear)}</td>
+                                <td class="overspent">${formatINR(o.remainingBalance)}</td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    if (ls.dueToMe.length === 0) {
+                        dueTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No receivables.</td></tr>`;
+                    } else {
+                        dueTbody.innerHTML = ls.dueToMe.map(d => `
+                            <tr>
+                                <td><strong>${d.name}</strong></td>
+                                <td>${formatINR(d.totalAmount)}</td>
+                                <td>${formatINR(d.amountReceivedInYear)}</td>
+                                <td class="underspent">${formatINR(d.remainingBalance)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (err) {
+                monthTbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Error: ${err.message}</td></tr>`;
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
